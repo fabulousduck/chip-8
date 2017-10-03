@@ -1,47 +1,71 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <SDL2/SDL.h>
-
-#define EMU_WIDTH 64
-#define EMU_HEIGHT 32
-
-typedef struct opcode_t
-{
-    unsigned int code;
-} Opcode;
-
-//memory map for the emu
-//  0x000 - 0x1FF : Emu interpreter (including the font set)
-//  0x050 - 0x0A0 : Used for the 4x5 pixel font set ( 0 - F)
-//  0x200 - 0xFFF : Program rom and work RAM
-typedef struct emu_t
-{
-    unsigned char gfx[EMU_WIDTH * EMU_HEIGHT];
-    unsigned char delay_timer;
-    unsigned char sound_timer;
-    unsigned char memory[4096];
-    unsigned char key[16];      //keypad state (this is hex based)
-    unsigned char V[16];        //chip-8 only has 15 registers, E register is the carry flag
-    unsigned short I;           //this is the index register
-    unsigned short pc;          //this is the program counter
-    unsigned short stack[16];   //16 stack levels
-    unsigned short sp;          //the stack pointer
-    Opcode opcodes[35];         //general opcode storage
-} Emu;
+#include "opcodes.h"
 
 SDL_Window * create_emu_window();
-
+void emulate_cycle(Emu * emu);
 
 int main()
 {
+    //setup variables for SDL2
+    SDL_Event event;
+    int running = 1;
+
     Emu *emu = malloc(sizeof(Emu));
-    printf("%d\n%d\n", EMU_WIDTH, EMU_HEIGHT);
     SDL_Window * emu_window = create_emu_window();
+
+    while(running == 1) {
+        while(SDL_PollEvent(&event)) {
+            if(event.type == SDL_QUIT) {
+                running = 0;
+            }
+        }       
+        emulate_cycle(emu); 
+        //if drawflag, draw graphics
+        //set keys
+        SDL_Delay(2000);
+    }
+}
+
+void init_emu(Emu * emu) 
+{
+    //init registers and memory once
+}
+
+void emulate_cycle(Emu * emu)
+{
+    unsigned int opcode = emu->memory[emu->pc] << 8 | emu->memory[emu->pc +1];
+    //decode opcode
+    //execute opcode
+    //update timers
+}
+
+Emu * create_emu()
+{
+    Emu * emu = malloc(sizeof(Emu));
+    Opcode opcodes[OPCODE_COUNT] = {
+        {"0NNN", CALL}, {"00E0", DISPLAY}, {"00EE", FLOW},
+        {"1NNN", FLOW}, {"2NNN", FLOW}, {"3XNN", COND},
+        {"4XNN", COND}, {"5XY0", COND}, {"6XNN", CONST},
+        {"7XNN", CONST}, {"8XY0", ASSIGN}, {"8XY1", BITOP},
+        {"8XY2", BITOP}, {"8XY3", BITOP}, {"8XY4", MATH},
+        {"8XY5", MATH}, {"8XY6", BITOP}, {"8XY7", MATH},
+        {"8XYE", BITOP}, {"9XY0", COND}, {"ANNN", MEM},
+        {"BNNN", FLOW}, {"CXNN", RAND}, {"DXYN", DISP},
+        {"EX9E", KEYOP}, {"EXA1", KEYOP}, {"FX07", TIMER},
+        {"FX0A", KEYOP}, {"FX15", TIMER}, {"FX18", SOUND},
+        {"FX1E", MEM}, {"FX29", MEM}, {"FX33", BCD},
+        {"FX55", MEM}, {"FX65", MEM}
+    };
+    memcpy(emu->opcodes, opcodes, OPCODE_COUNT);
+    return emu;
 }
 
 SDL_Window * create_emu_window()
 {
     SDL_Window *window;
+    SDL_Surface *surface = NULL;
 
     SDL_Init(SDL_INIT_VIDEO);
 
@@ -50,6 +74,6 @@ SDL_Window * create_emu_window()
     if(window == NULL) {
         printf("%s\n", SDL_GetError());
     }
-
+    surface = SDL_GetWindowSurface(window);
     return window;
 }
