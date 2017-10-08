@@ -32,7 +32,9 @@ This results in: `0010 1111 0101 1011` which translates into `2F5B` in hex.
 
 Now that we have our opcode `2F5B`, we need to check what it means.
 
-The docs describe the following:
+The following table describes what the placeholder values are and represent down below in the opcode table
+
+#### Notation
 
 | notation | explanation |
 | -------- | ----------- |
@@ -40,6 +42,11 @@ The docs describe the following:
 | N        | This is used when a number is imidiate |
 | NN       | This is used to represent a byte of data |
 | NNN      | This is used to represent an address |
+
+#### Opcodes
+
+| opcode   | explanation |
+| -------- | ----------- | 
 | 0XXX     | This is used for special operations. See special operations table |
 | 1XXX     | This is used for abosulte jumps. I.E : `12A8` == `JMP $2A8` |
 | 2XXX     | Jumps to a subroutine. See Subroutine jumps. |
@@ -47,3 +54,4 @@ The docs describe the following:
 | 4XXX     | Does a `SKIP.NE` with the latter byte being the source. I.E : `4800` == `SKIP.NE V[8], #$00` |
 | 5XXX     | Does a `SKIP.EQ` with the latter byte being the index for the registers(`V`). I.E `5A70` == `SKIP.EQ V[A], V[7]` |
 | 9XXX     | Does a `SKIP.NE` with the latter byte being the index for the registers(`V`). I.E `93B0` == `SKIP.NE, V[2], V[B]` |
+| 8XXX     |  
