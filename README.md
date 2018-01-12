@@ -65,7 +65,7 @@ The following table describes what the placeholder values are and represent down
 | 8XX0   | `MOV`: Example: `83A0` == `MOV V3, VA` |
 | 8XX1   | `OR`: Example: `83A1` == `OR V3, VA` |
 | 8XX2   | `AND`: Example: `83A2` == `AND V3, VA` |
-| 8XX3   | `XOR`: Example: 83A3` = `XOR V3, VA` (must alternate)|
+| 8XX3   | `XOR`: Example: `83A3` = `XOR V3, VA` (must alternate)|
 | 8XX4   | `ADD` on `VF`: Example: `83B4` == `ADD V3, VB` |
 | 8XX5   | `SUB` on `VF`: Example: `83B5` == `ADD V3, VB` |
 | 
