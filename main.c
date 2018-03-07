@@ -10,25 +10,27 @@ int main()
 {
     //setup variables for SDL2
     SDL_Event event;
-    int running = 1;
+    int sdl_running = 1;
 
     Emu *emu = malloc(sizeof(Emu));
     SDL_Window * emu_window = create_emu_window();
 
-    while(running == 1) {
+    while(sdl_running == 1) {
         while(SDL_PollEvent(&event)) {
             if(event.type == SDL_QUIT) {
-                running = 0;
+                sdl_running = 0;
             }
-        }       
-        emulate_cycle(emu); 
+        }
+        emulate_cycle(emu);
         //if drawflag, draw graphics
         //set keys
+
+        //this is done so SDL does not exit early through pointer resets
         SDL_Delay(2000);
     }
 }
 
-void init_emu(Emu * emu) 
+void init_emu(Emu * emu)
 {
     //init registers and memory once
 }
@@ -66,14 +68,20 @@ SDL_Window * create_emu_window()
 {
     SDL_Window *window;
     SDL_Surface *surface = NULL;
-
+    SDL_Renderer *renderer;
     SDL_Init(SDL_INIT_VIDEO);
 
-    window = SDL_CreateWindow("chip-8", 0, 0, EMU_WIDTH, EMU_HEIGHT, 0);
 
+    window = SDL_CreateWindow("chip-8", 0, 0, EMU_WIDTH, EMU_HEIGHT, 0);
+    renderer = SDL_CreateRenderer(window, -1, 0);
     if(window == NULL) {
         printf("%s\n", SDL_GetError());
     }
     surface = SDL_GetWindowSurface(window);
+
+    //fix for linux systems
+    SDL_SetRenderDrawColor(renderer, 0,0,0, 255);
+    SDL_RenderClear(renderer);
+    SDL_RenderPresent(renderer);
     return window;
 }
