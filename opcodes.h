@@ -27,5 +27,4 @@ typedef struct emu_t
     unsigned short pc;          //this is the program counter
     unsigned short stack[16];   //16 stack levels
     unsigned short sp;          //the stack pointer
-    Opcode opcodes[OPCODE_COUNT];         //opcode storage
 } Emu;
