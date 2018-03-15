@@ -2,14 +2,7 @@
 #define PIX_HEIGHT 10
 #define EMU_WIDTH 64 * PIX_WIDTH
 #define EMU_HEIGHT 32 * PIX_HEIGHT
-#define OPCODE_COUNT 35
-
-typedef enum {CALL, DISPLAY, FLOW, COND, ASSIGN, BITOP, MATH, MEM,                  DISP, KEYOP, TIMER, SOUND, BCD, CONST, RAND} callType;
-
-typedef struct opcode_t {
-    char * opcode;
-    callType type;
-} Opcode;
+#define PROGRAM_MEM_SPACE_START 512
 
 //memory map for the emu
 //  0x000 - 0x1FF : Emu interpreter (including the font set)
@@ -27,4 +20,5 @@ typedef struct emu_t
     unsigned short pc;          //this is the program counter
     unsigned short stack[16];   //16 stack levels
     unsigned short sp;          //the stack pointer
+    unsigned short opcode;      //current opcode
 } Emu;

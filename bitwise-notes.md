@@ -1,5 +1,29 @@
 # notes on bitwise operations
 
+
+## bitmasking
+
+bitmasking is basically the operation of hiding a a part of a bit vlue
+
+I.E
+
+if we wish to get 0x2F0 from 0xA2F0 we need to do the following
+
+1010001011110000 //0xA2F0
+0000111111111111 //0x0FFF
+
+----------------- AND
+
+0000001011110000 //0x2F0
+
+
+In typical c code this would look a little like this:
+
+```c
+unsigned int I = opcode & 0x0FFF;   //set I to the value of the resulting opcode
+pc += 2;                            //because we need to move the opcode pointer
+```
+
 note: to inverse any of these the opposite of all of these operations can be
 applied.
 

@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <SDL2/SDL.h>
-#include "opcodes.h"
+#include "emu.h"
 
 SDL_Window * create_emu_window();
 void emulate_cycle(Emu * emu);
@@ -30,23 +30,14 @@ int main()
     }
 }
 
-void init_emu(Emu * emu)
-{
-    //init registers and memory once
-}
-
 void emulate_cycle(Emu * emu)
 {
     unsigned int opcode = emu->memory[emu->pc] << 8 | emu->memory[emu->pc +1];
+
+
     //decode opcode
     //execute opcode
     //update timers
-}
-
-Emu * create_emu()
-{
-    Emu * emu = malloc(sizeof(Emu));
-    return emu;
 }
 
 SDL_Window * create_emu_window()
