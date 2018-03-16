@@ -13,6 +13,7 @@ int main()
     int sdl_running = 1;
 
     Emu *emu = malloc(sizeof(Emu));
+    init_emu(emu, "./games/PONG");
     SDL_Window * emu_window = create_emu_window();
 
     while(sdl_running == 1) {

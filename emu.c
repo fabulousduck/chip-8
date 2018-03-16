@@ -1,5 +1,9 @@
 #include <stdio.h>
-include "emu.h"
+#include <stdlib.h>
+#include "emu.h"
+
+
+unsigned int getFileLength(FILE *);
 
 Emu * create_emu()
 {
@@ -21,9 +25,17 @@ void init_emu(Emu * emu, char * fileName)
     FILE * fp = fopen(fileName, "rb");
     unsigned int bufferSize = getFileLength(fp);
     unsigned int i;
+    char * tempBuffer = (char *) malloc((bufferSize + 1) * sizeof(char));
+    fread(tempBuffer, bufferSize, 1, fp); // Read in the entire file
+
 
     for(i = 0; i < bufferSize; ++i) {
-        emu->memory[PROGRAM_MEM_SPACE_START + i] = fread()
+        printf("%c\n", tempBuffer[i]);
+        emu->memory[PROGRAM_MEM_SPACE_START + i] = tempBuffer[i];
+    }
+    
+    for(i = 0; i < bufferSize/2; i += 2) {
+        printf("%c\n", emu->memory[i]);
     }
 
 }

@@ -22,3 +22,5 @@ typedef struct emu_t
     unsigned short sp;          //the stack pointer
     unsigned short opcode;      //current opcode
 } Emu;
+
+void init_emu(Emu *, char *);
