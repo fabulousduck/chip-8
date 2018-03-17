@@ -28,12 +28,44 @@ This is enough space to move `memory[pc+1]` into. So by doing `| memory[pc+1]` w
 
 This results in: `0010 1111 0101 1011` which translates into `2F5B` in hex.
 
-### decoding the opcode
+## decoding the opcode
 
 Now that we have our opcode `2F5B`, we need to check what it means.
 
-The following table describes what the placeholder values are and represent down below in the opcode table
 
+Before we can do that we need to define a few things about opcodes namely how our table represents them.
+
+### `X`
+
+In our table, X can be any integer in range 0 - F.
+
+This integer represents a register in the register table.
+
+Within the table, we will represent any register in the register table as follows:
+
+`V[X]` where `V` is the register table and `X` the integer obtained from the opcode.
+
+### `Y`
+
+Same as X
+
+### `N`
+
+`N` is used to represent an `immidiate` vale. Meaning that it is to be interpreted literally.
+
+### `NN`
+
+`NN` is used to represent a byte of data.
+
+### `NNN`
+
+`NNN` is used to represent a memory address.
+
+## Syntax
+
+Now that we have a grasp of the litteral character definitions in our opcodes, we need to look at the syntax the opcode table uses to represent instructions represented by the opcodes.
+
+###
 #### Notation
 
 | notation | explanation |

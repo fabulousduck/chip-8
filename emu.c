@@ -25,18 +25,10 @@ void init_emu(Emu * emu, char * fileName)
     FILE * fp = fopen(fileName, "rb");
     unsigned int bufferSize = getFileLength(fp);
     unsigned int i;
-    char * tempBuffer = (char *) malloc((bufferSize + 1) * sizeof(char));
-    fread(tempBuffer, bufferSize, 1, fp); // Read in the entire file
+    fread((emu->memory + PROGRAM_MEM_SPACE_START) , bufferSize, 1, fp); // Read in the entire file into memory
 
-
-    for(i = 0; i < bufferSize; ++i) {
-        printf("%c\n", tempBuffer[i]);
-        emu->memory[PROGRAM_MEM_SPACE_START + i] = tempBuffer[i];
-    }
+    printf("read %d bytes into memory\n", bufferSize);
     
-    for(i = 0; i < bufferSize/2; i += 2) {
-        printf("%c\n", emu->memory[i]);
-    }
 
 }
 
