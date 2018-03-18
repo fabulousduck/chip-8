@@ -33,7 +33,7 @@ This results in: `0010 1111 0101 1011` which translates into `2F5B` in hex.
 Now that we have our opcode `2F5B`, we need to check what it means.
 
 
-Before we can do that we need to define a few things about opcodes namely how our table represents them.
+Before we can do that we need to define a few things about opcodes namely how the table represents them.
 
 ### `X`
 
@@ -61,43 +61,12 @@ Same as X
 
 `NNN` is used to represent a memory address.
 
-## Syntax
-
-Now that we have a grasp of the litteral character definitions in our opcodes, we need to look at the syntax the opcode table uses to represent instructions represented by the opcodes.
-
-###
-#### Notation
-
-| notation | explanation |
-| -------- | ----------- |
-| X / Y    | These are placeholders for an int between 0-F |
-| N        | This is used when a number is imidiate |
-| NN       | This is used to represent a byte of data |
-| NNN      | This is used to represent an address |
-
-#### Opcodes
-
-| opcode   | explanation |
-| -------- | ----------- | 
-| 0XXX     | This is used for special operations. See special operations table |
-| 1XXX     | This is used for abosulte jumps. I.E : `12A8` == `JMP $2A8` |
-| 2XXX     | Jumps to a subroutine. See Subroutine jumps. |
-| 3XXX     | Does a `SKIP.EQ` with the latter byte being the source. I.E : `3A00` == `SKIP.EQ V[A], #$00`. |
-| 4XXX     | Does a `SKIP.NE` with the latter byte being the source. I.E : `4800` == `SKIP.NE V[8], #$00` |
-| 5XXX     | Does a `SKIP.EQ` with the latter byte being the index for the registers(`V`). I.E `5A70` == `SKIP.EQ V[A], V[7]` |
-| 9XXX     | Does a `SKIP.NE` with the latter byte being the index for the registers(`V`). I.E `93B0` == `SKIP.NE, V[2], V[B]` |
-| 8XXX     | Register operations. See register operations table for exact definitions |
-|
 
 
-#### register ops
 
-| opcode | explanation |
-| ------ | ----------- |
-| 8XX0   | `MOV`: Example: `83A0` == `MOV V3, VA` |
-| 8XX1   | `OR`: Example: `83A1` == `OR V3, VA` |
-| 8XX2   | `AND`: Example: `83A2` == `AND V3, VA` |
-| 8XX3   | `XOR`: Example: `83A3` = `XOR V3, VA` (must alternate)|
-| 8XX4   | `ADD` on `VF`: Example: `83B4` == `ADD V3, VB` |
-| 8XX5   | `SUB` on `VF`: Example: `83B5` == `ADD V3, VB` |
-| 
+
+
+
+
+
+
