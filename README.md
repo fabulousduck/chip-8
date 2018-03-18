@@ -47,7 +47,13 @@ Within the table, we will represent any register in the register table as follow
 
 ### `Y`
 
-Same as X
+Same as X.
+
+This serves as a variable when we need to for instance compare registers
+
+I.E
+
+`V[X] != V[Y]`
 
 ### `N`
 

@@ -15,7 +15,7 @@ typedef struct emu_t
     unsigned char sound_timer;
     unsigned char memory[4096];
     unsigned char key[16];      //keypad state (this is hex based)
-    unsigned char V[16];        //chip-8 only has 15 registers, E register is the carry flag
+    unsigned char V[16];        //chip-8 only has 15 registers for use, F register is the carry flag
     unsigned short I;           //this is the index register
     unsigned short pc;          //this is the program counter
     unsigned short stack[16];   //16 stack levels
