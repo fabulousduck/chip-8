@@ -35,9 +35,7 @@ void emulate_cycle(Emu * emu)
 {
     unsigned int opcode = emu->memory[emu->pc] << 8 | emu->memory[emu->pc +1];
     
-    printf("%#04X\n", opcode);
-    emu->pc += 2;
-    return;
+    printf("%#04X\n", opcode & 0xF000);
     switch(opcode & 0xF000) {
         case 0x000:
             switch(opcode & 0x000F) {
@@ -57,17 +55,34 @@ void emulate_cycle(Emu * emu)
             break;
         case 0x3000:
             //skips the next instruction if V[X] == NN
+            if(emu->V[(opcode & 0x0F00) >> 8] == (opcode & 0x00FF)) {
+                emu->pc += 4;
+                break;
+            }
+            emu->pc += 2;
             break;
         case 0x4000:
             //skips the next instruction is V[X] != NN
+            if(emu->V[(opcode & 0x0F00) >> 8] != (opcode & 0x00FF)) {
+                emu->pc += 4;
+                break;
+            }
+            emu->pc += 2;
             break;
         case 0x5000:
             //skips the next instruction if V[X] == V[Y]
+            if(emu->V[(opcode & 0x0F00) >> 8] == emu->V[(opcode & 0x00F0) >> 4]) {
+                emu->pc += 4;
+                break;
+            }
+            emu->pc += 2;
             break;
         case 0x6000:
             //sets V[X] to value NN
+            emu->V[(opcode & 0x0F00) >> 8] = opcode & 0x00FF;
+            emu->pc += 2;
             break;
-        case 0x7000:
+        case 0x7000: 
             //adds NN to V[X] (Carry flag is not changed)
             break;
         case 0x8000:
@@ -170,8 +185,6 @@ void emulate_cycle(Emu * emu)
             break;
             
     }
-    //decode opcode
-    //execute opcode
     //update timers
 }
 

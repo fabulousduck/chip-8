@@ -72,7 +72,18 @@ I.E
 
 
 
+## random shit notes
 
+if we wish to shift a hex value, we must shift it by N*4 positions
+
+example:
+
+
+`0x0E00` is `0000 1110 0000 0000 0000` in binary
+
+we see here that each `0` in hex is 4  `0`'s in binary
+
+Thus we must shift N*4 positions
 
 
 
