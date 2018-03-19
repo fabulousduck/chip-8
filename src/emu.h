@@ -1,3 +1,5 @@
+#pragma once
+
 #define PIX_WIDTH 10
 #define PIX_HEIGHT 10
 #define EMU_WIDTH 64 * PIX_WIDTH

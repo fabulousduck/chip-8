@@ -1,12 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <SDL2/SDL.h>
-#include "emu.h"
+#include "src/emu.h"
+#include "src/wm.h"
+#include "src/memory_mapper.h"
 
 SDL_Window * create_emu_window();
 void emulate_cycle(Emu * emu);
 
-int main()
+int main(int argc, char * argv[])
 {
     //setup variables for SDL2
     SDL_Event event;
@@ -14,7 +16,13 @@ int main()
 
     Emu *emu = malloc(sizeof(Emu));
     init_emu(emu, "./games/PONG");
+
     SDL_Window * emu_window = create_emu_window();
+    
+    if(argc > 1 && argv[1]) {
+        SDL_Window * memory_visualizer = create_visualizer_window();
+    }
+    
 
     while(sdl_running == 1) {
         while(SDL_PollEvent(&event)) {
@@ -80,6 +88,7 @@ void emulate_cycle(Emu * emu)
         case 0x6000:
             //sets V[X] to value NN
             emu->V[(opcode & 0x0F00) >> 8] = opcode & 0x00FF;
+            display_register_access(emu, (opcode & 0x0F00) >> 8, WRITE);
             emu->pc += 2;
             break;
         case 0x7000: 
@@ -89,6 +98,7 @@ void emulate_cycle(Emu * emu)
             switch(opcode & 0x000F) {
                 case 0x0000:
                     //sets V[X] to the value of V[Y]
+                    emu->V[(opcode & 0x0F00) >> 8] = emu->V[(opcode & 0x00F0) >> 4];
                     break;
                 case 0x0001:
                     //sets V[X] to (V[X] OR V[Y]) 
@@ -188,24 +198,4 @@ void emulate_cycle(Emu * emu)
     //update timers
 }
 
-SDL_Window * create_emu_window()
-{
-    SDL_Window *window;
-    SDL_Surface *surface = NULL;
-    SDL_Renderer *renderer;
-    SDL_Init(SDL_INIT_VIDEO);
 
-
-    window = SDL_CreateWindow("chip-8", 0, 0, EMU_WIDTH, EMU_HEIGHT, 0);
-    renderer = SDL_CreateRenderer(window, -1, 0);
-    if(window == NULL) {
-        printf("%s\n", SDL_GetError());
-    }
-    surface = SDL_GetWindowSurface(window);
-
-    //fix for linux systems
-    SDL_SetRenderDrawColor(renderer, 0,0,0, 255);
-    SDL_RenderClear(renderer);
-    SDL_RenderPresent(renderer);
-    return window;
-}
