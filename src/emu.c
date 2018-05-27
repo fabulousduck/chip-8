@@ -20,10 +20,9 @@ void init_emu(Emu * emu, char * fileName)
     emu->sp = 0;
     //TODO load font set
 
-    //load program into rom
+    //load program into rom (read only memory)
     FILE * fp = fopen(fileName, "rb");
     unsigned int bufferSize = getFileLength(fp);
-    unsigned int i;
     fread((emu->memory + PROGRAM_MEM_SPACE_START) , bufferSize, 1, fp); // Read in the entire file into memory
 
     printf("read %d bytes into memory\n", bufferSize);

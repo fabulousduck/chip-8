@@ -46,3 +46,19 @@ SDL_Window * create_visualizer_window()
     SDL_RenderPresent(renderer);
     return window;
 }
+
+void updateScreenPixels(Emu * emu, SDL_Window * window) {
+    SDL_Surface * surface = SDL_GetWindowSurface(window);
+    unsigned short pp = 0;
+    for(int row_number = 0; row_number < EMU_HEIGHT; row_number += PIXEL_HEIGHT) {
+        for(int x_pixel_pos = 0; x_pixel_pos < EMU_WIDTH; x_pixel_pos += PIXEL_WIDTH) {
+            SDL_Rect pixel = {x_pixel_pos,row_number,PIXEL_WIDTH,PIXEL_HEIGHT};
+            if(emu->gfx[pp] == 1) {
+                printf("drawing pixel gtx[%d]", pp);
+                SDL_FillRect(surface, &pixel, SDL_MapRGB(surface->format, 255, 255, 255));
+            }
+            ++pp;
+        }
+    }
+    return;
+}

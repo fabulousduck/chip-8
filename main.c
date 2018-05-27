@@ -6,7 +6,7 @@
 #include "src/memory_mapper.h"
 
 SDL_Window * create_emu_window();
-void emulate_cycle(Emu * emu);
+void emulate_cycle(Emu * emu, SDL_Window * window);
 
 int main(int argc, char * argv[])
 {
@@ -30,7 +30,7 @@ int main(int argc, char * argv[])
                 sdl_running = 0;
             }
         }
-        emulate_cycle(emu);
+        emulate_cycle(emu, emu_window);
         //if drawflag, draw graphics
         //set keys
 
@@ -39,11 +39,11 @@ int main(int argc, char * argv[])
     }
 }
 
-void emulate_cycle(Emu * emu)
+void emulate_cycle(Emu * emu, SDL_Window * window)
 {
     unsigned int opcode = emu->memory[emu->pc] << 8 | emu->memory[emu->pc +1];
     
-    printf("%#04X\n", opcode & 0xF000);
+    printf("%#04X\n", opcode);
     switch(opcode & 0xF000) {
         case 0x000:
             switch(opcode & 0x000F) {
@@ -131,6 +131,8 @@ void emulate_cycle(Emu * emu)
             break;
         case 0xA000:
             //Sets I to the address NNN
+            emu->I = opcode & 0x0FFF;
+            emu->pc += 2;
             break;
         case 0xB000:
             //jumps to address (NNN + V[0])
@@ -139,11 +141,43 @@ void emulate_cycle(Emu * emu)
             //sets V[X] to the result of a bitwise AND operation on a random number from 0 - 255 and NN
             break;
         case 0xD000:
-            //draws sprite at at coordinates V[X] and V[Y] with a width of 8 pixels.
-            //each row of 8 pixels is read as bit-encoded starting from memory location emu->I.
-            //the value of emu->I does not change after the execution of these instructions
-            //V[0xF] is set to 1 if any screen pixels are flipped from set to unset when the sprite is drawn, and to 0 if that does not happen
-            break;
+            {
+                unsigned short num_rows = opcode & 0x000F;
+                unsigned short x = emu->V[(opcode & 0x0F00) >> 8];
+                unsigned short y = emu->V[(opcode & 0x00F0) >> 4];
+
+                printf("draw operation\n num rows: %d\n x cord: %d\n y cord %d\n\n", num_rows, x, y);
+                printf("pixel state data bit rep\n");
+                emu->V[0xF] = 0;
+                for(int i = 0; i < num_rows; i++) {
+                    printf("> %#04X, i MANANAANANAN: %d \n", emu->memory[emu->I+i], emu->I +i);
+                    printf("FUCKING");
+
+                    unsigned short pixel = emu->memory[emu->I + i];
+                    for(int x_pixel_num = 0; x_pixel_num < 8; x_pixel_num++) {
+                        printf("1");
+                        if((pixel & (0x80 >> x_pixel_num)) != 0) { //0x80 has something to do with how the pixels are stored in memory. we dont have to worry about why its 0x80. it just is.
+                            printf("2");
+                            if(emu->gfx[(x + x_pixel_num + ((y + i) * 64))] == 1) {
+                                printf("2.5");
+                                emu->V[0xF] = 1;
+                            }
+                            printf("3");
+                            emu->gfx[x + x_pixel_num + ((y + i) * 64)] ^= 1;
+                            printf("4");
+                            updateScreenPixels(emu,window);
+                        }
+                    }
+                }
+
+                //draws sprite at at coordinates V[X] and V[Y] with a width of 8 pixels.
+                //each row of 8 pixels is read as bit-encoded starting from memory location emu->I.
+                //the value of emu->I does not change after the execution of these instructions
+                //V[0xF] is set to 1 if any screen pixels are flipped from set to unset when the sprite is drawn, and to 0 if that does not happen
+                
+                emu->pc += 2;
+                break;
+            }
         case 0xE000:
             switch (opcode & 0x000F) {
                 case 0x000E:
