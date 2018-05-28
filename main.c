@@ -146,14 +146,12 @@ void emulate_cycle(Emu * emu, SDL_Window * window)
                 unsigned short x = emu->V[(opcode & 0x0F00) >> 8];
                 unsigned short y = emu->V[(opcode & 0x00F0) >> 4];
 
-                printf("draw operation\n num rows: %d\n x cord: %d\n y cord %d\n\n", num_rows, x, y);
-                printf("pixel state data bit rep\n");
                 emu->V[0xF] = 0;
-                for(int i = 0; i < num_rows; i++) {
-                    printf("> %#04X, i MANANAANANAN: %d \n", emu->memory[emu->I+i], emu->I +i);
-                    printf("FUCKING");
-
+                printf("-2");
+                for(unsigned short i = 0; i < num_rows; i++) {
+                    printf("-1");
                     unsigned short pixel = emu->memory[emu->I + i];
+                    printf("0");
                     for(int x_pixel_num = 0; x_pixel_num < 8; x_pixel_num++) {
                         printf("1");
                         if((pixel & (0x80 >> x_pixel_num)) != 0) { //0x80 has something to do with how the pixels are stored in memory. we dont have to worry about why its 0x80. it just is.
@@ -166,12 +164,14 @@ void emulate_cycle(Emu * emu, SDL_Window * window)
                             emu->gfx[x + x_pixel_num + ((y + i) * 64)] ^= 1;
                             printf("4");
                             updateScreenPixels(emu,window);
+                            fflush(stdout);  
+
                         }
                     }
                 }
 
                 //draws sprite at at coordinates V[X] and V[Y] with a width of 8 pixels.
-                //each row of 8 pixels is read as bit-encoded starting from memory location emu->I.
+                //each row of 8 pixels is read as bit-encoded string starting from memory location emu->I.
                 //the value of emu->I does not change after the execution of these instructions
                 //V[0xF] is set to 1 if any screen pixels are flipped from set to unset when the sprite is drawn, and to 0 if that does not happen
                 
