@@ -5,8 +5,7 @@
 #include "src/wm.h"
 #include "src/memory_mapper.h"
 
-SDL_Window * create_emu_window();
-void emulate_cycle(Emu * emu, SDL_Window * window);
+void emulate_cycle(Emu * emu);
 
 int main(int argc, char * argv[])
 {
@@ -17,21 +16,19 @@ int main(int argc, char * argv[])
     Emu *emu = malloc(sizeof(Emu));
     init_emu(emu, "./games/PONG");
 
-    SDL_Window * emu_window = create_emu_window();
-    
-    if(argc > 1 && argv[1]) {
-        SDL_Window * memory_visualizer = create_visualizer_window();
-    }
-    
 
+    SDL_Renderer * emu_renderer = create_emu_window();
+    
     while(sdl_running == 1) {
         while(SDL_PollEvent(&event)) {
             if(event.type == SDL_QUIT) {
                 sdl_running = 0;
             }
         }
-        emulate_cycle(emu, emu_window);
-        //if drawflag, draw graphics
+        emulate_cycle(emu);
+        if(emu->drawflag == 1) {
+            updateScreenPixels(emu,emu_renderer);
+        }
         //set keys
 
         //this is done so SDL does not exit early through pointer resets
@@ -39,7 +36,7 @@ int main(int argc, char * argv[])
     }
 }
 
-void emulate_cycle(Emu * emu, SDL_Window * window)
+void emulate_cycle(Emu * emu)
 {
     unsigned int opcode = emu->memory[emu->pc] << 8 | emu->memory[emu->pc +1];
     
@@ -88,7 +85,6 @@ void emulate_cycle(Emu * emu, SDL_Window * window)
         case 0x6000:
             //sets V[X] to value NN
             emu->V[(opcode & 0x0F00) >> 8] = opcode & 0x00FF;
-            display_register_access(emu, (opcode & 0x0F00) >> 8, WRITE);
             emu->pc += 2;
             break;
         case 0x7000: 
@@ -142,38 +138,29 @@ void emulate_cycle(Emu * emu, SDL_Window * window)
             break;
         case 0xD000:
             {
-                unsigned short num_rows = opcode & 0x000F;
-                unsigned short x = emu->V[(opcode & 0x0F00) >> 8];
-                unsigned short y = emu->V[(opcode & 0x00F0) >> 4];
-
-                emu->V[0xF] = 0;
-                printf("-2");
-                for(unsigned short i = 0; i < num_rows; i++) {
-                    printf("-1");
-                    unsigned short pixel = emu->memory[emu->I + i];
-                    printf("0");
-                    for(int x_pixel_num = 0; x_pixel_num < 8; x_pixel_num++) {
-                        printf("1");
-                        if((pixel & (0x80 >> x_pixel_num)) != 0) { //0x80 has something to do with how the pixels are stored in memory. we dont have to worry about why its 0x80. it just is.
-                            printf("2");
-                            if(emu->gfx[(x + x_pixel_num + ((y + i) * 64))] == 1) {
-                                printf("2.5");
-                                emu->V[0xF] = 1;
-                            }
-                            printf("3");
-                            emu->gfx[x + x_pixel_num + ((y + i) * 64)] ^= 1;
-                            printf("4");
-                            updateScreenPixels(emu,window);
-                            fflush(stdout);  
-
-                        }
-                    }
-                }
 
                 //draws sprite at at coordinates V[X] and V[Y] with a width of 8 pixels.
                 //each row of 8 pixels is read as bit-encoded string starting from memory location emu->I.
                 //the value of emu->I does not change after the execution of these instructions
                 //V[0xF] is set to 1 if any screen pixels are flipped from set to unset when the sprite is drawn, and to 0 if that does not happen
+                unsigned short num_rows = opcode & 0x000F;
+                unsigned short x = emu->V[(opcode & 0x0F00) >> 8];
+                unsigned short y = emu->V[(opcode & 0x00F0) >> 4];
+
+                emu->V[0xF] = 0;
+                for(unsigned short i = 0; i < num_rows; i++) {
+                    unsigned short pixel = emu->memory[emu->I + i];
+                    for(int row_x_index = 0; row_x_index < 8; row_x_index++) {
+                        //the 0x80 equals 1000 0000. every loop the 1 shifts 1 to the right. and then we take that and OR (mask) it with the bits we have
+                        if((pixel & (0x80 >> row_x_index)) != 0) { 
+                            if(emu->gfx[(x + row_x_index + ((y + i) * 64))] == 1) {
+                                emu->V[0xF] = 1;
+                            }
+                            emu->gfx[x + row_x_index + ((y + i) * 64)] ^= 1; //if LHS XOR RHS. LHS = 1
+                            emu->drawflag = 1;
+                        }
+                    }
+                }
                 
                 emu->pc += 2;
                 break;
@@ -229,6 +216,7 @@ void emulate_cycle(Emu * emu, SDL_Window * window)
             break;
             
     }
+    return;
     //update timers
 }
 

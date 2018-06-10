@@ -18,6 +18,7 @@ void init_emu(Emu * emu, char * fileName)
     emu->opcode = 0;
     emu->I = 0;
     emu->sp = 0;
+    emu->drawflag = 0;     
     //TODO load font set
 
     //load program into rom (read only memory)
