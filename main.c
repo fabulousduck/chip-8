@@ -4,6 +4,7 @@
 #include "src/emu.h"
 #include "src/wm.h"
 #include "src/memory_mapper.h"
+#include "src/helpers.h"
 
 void emulate_cycle(Emu * emu);
 
@@ -40,6 +41,12 @@ void emulate_cycle(Emu * emu)
 {
     unsigned int opcode = emu->memory[emu->pc] << 8 | emu->memory[emu->pc +1];
     
+    /*
+        0x2F5B
+
+
+    */
+
     printf("%#04X\n", opcode);
     switch(opcode & 0xF000) {
         case 0x000:
@@ -57,6 +64,9 @@ void emulate_cycle(Emu * emu)
             break;
         case 0x2000:
             //call subroutine at 0x0NNN;
+            emu->stack[emu->sp] = emu->pc;
+            ++emu->sp;
+            emu->pc = opcode & 0x0FFF;
             break;
         case 0x3000:
             //skips the next instruction if V[X] == NN
@@ -160,8 +170,7 @@ void emulate_cycle(Emu * emu)
                             emu->drawflag = 1;
                         }
                     }
-                }
-                
+                }   
                 emu->pc += 2;
                 break;
             }
@@ -196,13 +205,23 @@ void emulate_cycle(Emu * emu)
                     //sets emu->I to the location of the sprite for the character in V[X].
                     //characters 0-F (in hexadecimal) are represented by a 4x5 font.
                 case 0x0033:
+                    {
+                        int digits = emu->V[(opcode & 0x0F00) >> 8];
+                        int i = 0;
+                        while(digits != 0){
+                            emu->memory[emu->I + i] = digits % 10;
+                            digits /= 10;
+                            ++i;
+                        }
+                        emu->pc += 2;
+                    }
+                    
                     //stores V[X] as decimal number in its separate in at memory addresses emu->I / emu->I+1 / emu->I+2
                     //I.E
                     //decimal V[X] == 123 would be
                     //store 1 in emu->memory[emu->I]
                     //store 2 in emu->memory[emu->I + 1]
                     //store 3 in emu->memory[emu->I + 2]
-
                 case 0x0055:
                     //stores V[0] to V[X] (including V[X]) in memory address starting at emu->I.
                     //emu->I is increased for every value written
