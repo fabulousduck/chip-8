@@ -97,8 +97,10 @@ void emulate_cycle(Emu * emu)
             emu->V[(opcode & 0x0F00) >> 8] = opcode & 0x00FF;
             emu->pc += 2;
             break;
-        case 0x7000: 
+        case 0x7000:
             //adds NN to V[X] (Carry flag is not changed)
+            emu->V[(opcode & 0x0F00) >> 8] += (opcode & 0x00FF); 
+            emu->pc += 2;
             break;
         case 0x8000:
             switch(opcode & 0x000F) {
@@ -229,6 +231,11 @@ void emulate_cycle(Emu * emu)
                 case 0x0065:
                     //fills V[0] to V[X] (including V[X]) with the values starting at memory address emu->I.
                     //emu->I is increased for every value written
+                    for(int i = 0; i <= ((opcode & 0x0F00) >> 8); ++i) {
+                        emu->V[i] = emu->memory[emu->I];
+                        emu->I++;
+                    }
+                    emu->pc += 2;
                     break;
             }
 
