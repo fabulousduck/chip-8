@@ -23,7 +23,7 @@ SDL_Renderer * create_emu_window()
 }
 
 
-void updateScreenPixels(Emu * emu, SDL_Renderer * emu_renderer) {
+void update_screen_pixels(Emu * emu, SDL_Renderer * emu_renderer) {
 
 
     unsigned short pp = 0;
@@ -38,5 +38,10 @@ void updateScreenPixels(Emu * emu, SDL_Renderer * emu_renderer) {
         }
     }
     SDL_RenderPresent(emu_renderer);
+    return;
+}
+
+void clear_screen(SDL_Renderer * emu_renderer) {
+    SDL_RenderClear(emu_renderer);
     return;
 }

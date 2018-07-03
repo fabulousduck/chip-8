@@ -4,9 +4,8 @@
 #include "src/emu.h"
 #include "src/wm.h"
 #include "src/memory_mapper.h"
-#include "src/helpers.h"
 
-void emulate_cycle(Emu * emu);
+void emulate_cycle(Emu * emu, SDL_Renderer * renderer);
 
 int main(int argc, char * argv[])
 {
@@ -26,9 +25,9 @@ int main(int argc, char * argv[])
                 sdl_running = 0;
             }
         }
-        emulate_cycle(emu);
+        emulate_cycle(emu, emu_renderer);
         if(emu->drawflag == 1) {
-            updateScreenPixels(emu,emu_renderer);
+            update_screen_pixels(emu,emu_renderer);
         }
         //set keys
 
@@ -37,15 +36,10 @@ int main(int argc, char * argv[])
     }
 }
 
-void emulate_cycle(Emu * emu)
+void emulate_cycle(Emu * emu, SDL_Renderer * renderer)
 {
     unsigned int opcode = emu->memory[emu->pc] << 8 | emu->memory[emu->pc +1];
     
-    /*
-        0x2F5B
-
-
-    */
 
     printf("%#04X\n", opcode);
     switch(opcode & 0xF000) {
@@ -53,9 +47,12 @@ void emulate_cycle(Emu * emu)
             switch(opcode & 0x000F) {
                 case 0x000E:
                     //return from subroutine
+                    emu->pc = emu->stack[--emu->sp];
                     break;
                 case 0x0000:
                     //clear display;
+                    clear_screen(renderer);
+                    emu->pc += 2;
                     break;
             }
             break;
@@ -110,12 +107,16 @@ void emulate_cycle(Emu * emu)
                     break;
                 case 0x0001:
                     //sets V[X] to (V[X] OR V[Y]) 
+                   emu->V[(opcode & 0x0F00) >> 8] |= emu->V[(opcode & 0x00F0) >> 4];
                     break;
                 case 0x0002:
                     //sets V[X] to (V[X] AND V[Y]) 
+                    emu->V[(opcode & 0x0F00) >> 8] &= emu->V[(opcode & 0x00F0) >> 4];
+                    emu->pc += 2; 
                     break;
                 case 0x0003:
                     //sets V[X] to (V[X] XOR V[Y]) 
+                    emu->V[(opcode & 0x0F00) >> 8] ^= emu->V[(opcode & 0x00F0) >> 4];
                     break;
                 case 0x0004:
                     //adds V[X] to V[Y] use carry flag if needed
@@ -180,6 +181,7 @@ void emulate_cycle(Emu * emu)
             switch (opcode & 0x000F) {
                 case 0x000E:
                     //skips the next instruction of the key stored in V[X] is pressed
+                    // emu->pc += 4;
                     break;
                 case 0x0001:
                     //skips the next instruction if the key stored in V[X] is not pressed
@@ -202,22 +204,20 @@ void emulate_cycle(Emu * emu)
                     break;
                 case 0x001E:
                     //adds V[X] to emu->I
+                    emu->I += emu->V[(opcode & 0x0F00) >> 8];
                     break;
                 case 0x0029:
                     //sets emu->I to the location of the sprite for the character in V[X].
                     //characters 0-F (in hexadecimal) are represented by a 4x5 font.
+                    emu->I = ((opcode & 0x0F00) >> 8) * 5;
+                    emu->pc += 2;
+                    break;
                 case 0x0033:
-                    {
-                        int digits = emu->V[(opcode & 0x0F00) >> 8];
-                        int i = 0;
-                        while(digits != 0){
-                            emu->memory[emu->I + i] = digits % 10;
-                            digits /= 10;
-                            ++i;
-                        }
-                        emu->pc += 2;
-                    }
-                    
+                    emu->memory[emu->I]     =  emu->V[(opcode & 0x0F00) >> 8] / 100;
+                    emu->memory[emu->I + 1] = (emu->V[(opcode & 0x0F00) >> 8] / 10) % 10;
+                    emu->memory[emu->I + 2] = (emu->V[(opcode & 0x0F00) >> 8] % 100) % 10;
+                    emu->pc += 2;
+                    break;
                     //stores V[X] as decimal number in its separate in at memory addresses emu->I / emu->I+1 / emu->I+2
                     //I.E
                     //decimal V[X] == 123 would be

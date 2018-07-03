@@ -11,6 +11,7 @@
 //  0x000 - 0x1FF : Emu interpreter (including the font set)
 //  0x050 - 0x0A0 : Used for the 4x5 pixel font set ( 0 - F)
 //  0x200 - 0xFFF : Program rom and work RAM
+
 typedef struct emu_t
 {
     unsigned char gfx[EMU_WIDTH * EMU_HEIGHT];

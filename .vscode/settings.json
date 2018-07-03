@@ -1,6 +1,7 @@
 {
     "C_Cpp.intelliSenseEngineFallback": "Disabled",
     "files.associations": {
-        "sdl.h": "c"
+        "sdl.h": "c",
+        "iterator": "c"
     }
 }
