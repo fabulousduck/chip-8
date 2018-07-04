@@ -74,3 +74,8 @@ void store_key_input(Emu * emu, SDL_Event * event, unsigned int storage_register
     }
     return;
 }
+
+//returns 1 if true, 0 if false
+int check_key_up(int key) {
+    
+}

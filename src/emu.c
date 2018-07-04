@@ -60,9 +60,3 @@ unsigned int get_file_length(FILE * fp) {
     fseek(fp, 0, SEEK_SET);
     return length;
 }
-
-void set_stack_variable(Emu * emu, unsigned int index, unsigned char value) {
-    printf("setting emu->V[%d] to %c\n", index, value);
-    emu->V[index] = value;
-    return;
-}

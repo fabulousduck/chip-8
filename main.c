@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include <SDL2/SDL.h>
 #include "src/emu.h"
 #include "src/wm.h"
@@ -15,10 +16,12 @@ int main(int argc, char * argv[])
 
     Emu *emu = malloc(sizeof(Emu));
     init_emu(emu, "./games/PONG");
-
+    
 
     SDL_Renderer * emu_renderer = create_emu_window();
-    
+    struct timespec tim, tim2;
+    tim.tv_sec = 0;
+    tim.tv_nsec = 16000000;
     while(sdl_running == 1) {
         while(SDL_PollEvent(&event)) {
             if(event.type == SDL_QUIT) {
@@ -32,7 +35,14 @@ int main(int argc, char * argv[])
         //set keys
 
         //this is done so SDL does not exit early through pointer resets
-        SDL_Delay(100);
+        nanosleep(&tim, &tim2);
+        if(emu->delay_timer != 0) {
+            --emu->delay_timer;
+        }
+        if(emu->sound_timer != 0) {
+            -- emu->sound_timer;
+        }
+        SDL_Delay(1);
     }
 }
 
@@ -61,14 +71,12 @@ void emulate_cycle(Emu * emu, SDL_Renderer * renderer)
         case 0x1000:
             //goto 0x0NNN;
             emu->pc = opcode & 0x0FFF;
-            emu->pc += 2;
+            // emu->pc += 2;
             break;
         case 0x2000:
             //call subroutine at 0x0NNN;
             emu->sp++;
-            // printf("pc value: %d, emu->sp value: %d, emu->V[emu->sp] value: %d\n", emu->pc, emu->sp, emu->V[emu->sp]);
-            emu->stack[emu->sp] = emu->pc; //this is not setting emu->V to emu->pc
-            // printf("pc value: %d, emu->sp value: %d, emu->V[emu->sp] value: %d\n", emu->pc, emu->sp, emu->V[emu->sp]);
+            emu->stack[emu->sp] = emu->pc;
             emu->pc = (opcode & 0x0FFF);
             break;
         case 0x3000:
@@ -207,6 +215,8 @@ void emulate_cycle(Emu * emu, SDL_Renderer * renderer)
             switch (opcode & 0x00FF) {
                 case 0x0007:
                     //sets V[X] to the value of the delay timer
+                    emu->V[(opcode & 0x0F00) >> 8] = emu->delay_timer;
+                    emu->pc += 2;  
                     break;
                 case 0x000A:
                     //A key press is awaited and then stored in V[X]. (blocking operation. all execution is halted untill next key event)
@@ -272,9 +282,8 @@ void emulate_cycle(Emu * emu, SDL_Renderer * renderer)
                     //fills V[0] to V[X] (including V[X]) with the values starting at memory address emu->I.
                     //emu->I is increased for every value written
                     for(int i = 0; i <= ((opcode & 0x0F00) >> 8); ++i) {
-                        set_stack_variable(emu, i, emu->memory[emu->I]);
+                        emu->V[i] = emu->memory[emu->I];
                         ++emu->I;
-                        // emu->V[i] = emu->memory[emu->I + i];
                     }
                     emu->pc += 2;
                     break;
