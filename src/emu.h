@@ -29,4 +29,3 @@ typedef struct emu_t
 } Emu;
 
 void init_emu(Emu *, char *);
-void set_stack_variable(Emu *, unsigned int, unsigned char);
