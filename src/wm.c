@@ -3,6 +3,25 @@
 #include "wm.h"
 #include "memory_mapper.h"
 
+unsigned int key_map[16] = {
+    SDLK_0,
+    SDLK_1,
+    SDLK_2,
+    SDLK_3,
+    SDLK_4,
+    SDLK_5,
+    SDLK_6,
+    SDLK_7,
+    SDLK_8,
+    SDLK_9,
+    SDLK_a,
+    SDLK_b,
+    SDLK_c,
+    SDLK_d,
+    SDLK_e,
+    SDLK_f
+};
+
 SDL_Renderer * create_emu_window()
 {
     SDL_Window *window;
@@ -43,5 +62,15 @@ void update_screen_pixels(Emu * emu, SDL_Renderer * emu_renderer) {
 
 void clear_screen(SDL_Renderer * emu_renderer) {
     SDL_RenderClear(emu_renderer);
+    return;
+}
+
+void store_key_input(Emu * emu, SDL_Event * event, unsigned int storage_register) {
+    unsigned int event_key = event->key.keysym.sym;
+    for(int i = 0; i < 16; ++i) {
+        if(event_key == key_map[i]) {
+            emu->V[storage_register] = i;
+        }
+    }
     return;
 }

@@ -47,7 +47,9 @@ void emulate_cycle(Emu * emu, SDL_Renderer * renderer)
             switch(opcode & 0x000F) {
                 case 0x000E:
                     //return from subroutine
-                    emu->pc = emu->stack[--emu->sp];
+                    emu->pc = emu->stack[emu->sp];
+                    --emu->sp;
+                    emu->pc += 2;
                     break;
                 case 0x0000:
                     //clear display;
@@ -58,34 +60,35 @@ void emulate_cycle(Emu * emu, SDL_Renderer * renderer)
             break;
         case 0x1000:
             //goto 0x0NNN;
+            emu->pc = opcode & 0x0FFF;
+            emu->pc += 2;
             break;
         case 0x2000:
             //call subroutine at 0x0NNN;
-            emu->stack[emu->sp] = emu->pc;
-            ++emu->sp;
-            emu->pc = opcode & 0x0FFF;
+            emu->sp++;
+            // printf("pc value: %d, emu->sp value: %d, emu->V[emu->sp] value: %d\n", emu->pc, emu->sp, emu->V[emu->sp]);
+            emu->stack[emu->sp] = emu->pc; //this is not setting emu->V to emu->pc
+            // printf("pc value: %d, emu->sp value: %d, emu->V[emu->sp] value: %d\n", emu->pc, emu->sp, emu->V[emu->sp]);
+            emu->pc = (opcode & 0x0FFF);
             break;
         case 0x3000:
             //skips the next instruction if V[X] == NN
             if(emu->V[(opcode & 0x0F00) >> 8] == (opcode & 0x00FF)) {
-                emu->pc += 4;
-                break;
+                emu->pc += 2;
             }
             emu->pc += 2;
             break;
         case 0x4000:
             //skips the next instruction is V[X] != NN
             if(emu->V[(opcode & 0x0F00) >> 8] != (opcode & 0x00FF)) {
-                emu->pc += 4;
-                break;
+                emu->pc += 2;
             }
             emu->pc += 2;
             break;
         case 0x5000:
             //skips the next instruction if V[X] == V[Y]
             if(emu->V[(opcode & 0x0F00) >> 8] == emu->V[(opcode & 0x00F0) >> 4]) {
-                emu->pc += 4;
-                break;
+                emu->pc += 2;
             }
             emu->pc += 2;
             break;
@@ -137,6 +140,10 @@ void emulate_cycle(Emu * emu, SDL_Renderer * renderer)
             break;
         case 0x9000:
             //skips the next instruction if V[X] does not equal V[Y]
+            if(emu->V[(opcode & 0x0F00) >> 8] != emu->V[(opcode & 0x00F0) >> 4]) {
+                emu->pc += 2;
+            }
+            emu->pc += 2;
             break;
         case 0xA000:
             //Sets I to the address NNN
@@ -144,14 +151,21 @@ void emulate_cycle(Emu * emu, SDL_Renderer * renderer)
             emu->pc += 2;
             break;
         case 0xB000:
-            //jumps to address (NNN + V[0])
+            //goto address (NNN + V[0])
+            emu->pc = (opcode & 0x0FFF) + emu->V[0];
+            emu->pc += 2;
             break;
         case 0xC000:
             //sets V[X] to the result of a bitwise AND operation on a random number from 0 - 255 and NN
+            {
+                time_t t;
+                srand((unsigned) time(&t));
+                emu->V[(opcode & 0x0F00) >> 8] = ((rand() % 255) & (opcode & 0x00FF));
+                emu->pc += 2;
+            }
             break;
         case 0xD000:
             {
-
                 //draws sprite at at coordinates V[X] and V[Y] with a width of 8 pixels.
                 //each row of 8 pixels is read as bit-encoded string starting from memory location emu->I.
                 //the value of emu->I does not change after the execution of these instructions
@@ -181,6 +195,7 @@ void emulate_cycle(Emu * emu, SDL_Renderer * renderer)
             switch (opcode & 0x000F) {
                 case 0x000E:
                     //skips the next instruction of the key stored in V[X] is pressed
+                    printf("ETA YEEEEEE\n");
                     // emu->pc += 4;
                     break;
                 case 0x0001:
@@ -195,45 +210,71 @@ void emulate_cycle(Emu * emu, SDL_Renderer * renderer)
                     break;
                 case 0x000A:
                     //A key press is awaited and then stored in V[X]. (blocking operation. all execution is halted untill next key event)
+                    {
+                        printf("keypress awaited : \n");
+                        SDL_Event event;
+                        while(SDL_PollEvent(&event)) {
+                            if(event.type == SDL_KEYDOWN) {
+                                store_key_input(emu, &event, ((opcode & 0x0F00) >> 8));
+                            }
+                        }
+                        emu->pc += 2;
+                    }
                     break;
                 case 0x0015:
                     //sets the delay timer to V[X]
+                    emu->delay_timer = emu->V[(opcode & 0x0F00) >> 8];
+                    emu->pc += 2;
                     break;
                 case 0x0018:
                     //sets the sound timer to V[X]
+                    emu->sound_timer = emu->V[(opcode & 0x0F00) >> 8];
+                    emu->pc += 2;
                     break;
                 case 0x001E:
                     //adds V[X] to emu->I
                     emu->I += emu->V[(opcode & 0x0F00) >> 8];
+                    emu->pc += 2;
                     break;
                 case 0x0029:
-                    //sets emu->I to the location of the sprite for the character in V[X].
+                    //sets emu->I to the location of the sprite for the character currently in V[X].
                     //characters 0-F (in hexadecimal) are represented by a 4x5 font.
-                    emu->I = ((opcode & 0x0F00) >> 8) * 5;
+                    emu->I = emu->V[((opcode & 0x0F00) >> 8)] * 5;
                     emu->pc += 2;
                     break;
                 case 0x0033:
-                    emu->memory[emu->I]     =  emu->V[(opcode & 0x0F00) >> 8] / 100;
-                    emu->memory[emu->I + 1] = (emu->V[(opcode & 0x0F00) >> 8] / 10) % 10;
-                    emu->memory[emu->I + 2] = (emu->V[(opcode & 0x0F00) >> 8] % 100) % 10;
-                    emu->pc += 2;
-                    break;
+                    {
+                        unsigned int X = (opcode & 0x0F00) >> 8;
+                        emu->memory[emu->I]     = emu->V[X] / 100;
+                        emu->memory[emu->I + 1] = (emu->V[X] / 10) % 10;
+                        emu->memory[emu->I + 2] = (emu->V[X] % 100) % 10;
+                    }
+
                     //stores V[X] as decimal number in its separate in at memory addresses emu->I / emu->I+1 / emu->I+2
                     //I.E
                     //decimal V[X] == 123 would be
                     //store 1 in emu->memory[emu->I]
                     //store 2 in emu->memory[emu->I + 1]
                     //store 3 in emu->memory[emu->I + 2]
+
+                    emu->pc += 2;
+                    break;
                 case 0x0055:
                     //stores V[0] to V[X] (including V[X]) in memory address starting at emu->I.
                     //emu->I is increased for every value written
+                    for(int i = 0; i <= (opcode & 0x0F00) >> 8; ++i) {
+                        emu->memory[emu->I + i] = emu->V[i];
+                        ++emu->I;
+                    }
+                    emu->pc += 2;
                     break;
                 case 0x0065:
                     //fills V[0] to V[X] (including V[X]) with the values starting at memory address emu->I.
                     //emu->I is increased for every value written
                     for(int i = 0; i <= ((opcode & 0x0F00) >> 8); ++i) {
-                        emu->V[i] = emu->memory[emu->I];
-                        emu->I++;
+                        set_stack_variable(emu, i, emu->memory[emu->I]);
+                        ++emu->I;
+                        // emu->V[i] = emu->memory[emu->I + i];
                     }
                     emu->pc += 2;
                     break;
@@ -245,5 +286,3 @@ void emulate_cycle(Emu * emu, SDL_Renderer * renderer)
     return;
     //update timers
 }
-
-
