@@ -2,7 +2,6 @@
 
 #include "emu.h"
 #include "wm.h"
-#include "memory_mapper.h"
 
 unsigned int key_map[16] = {
     SDLK_0,
@@ -42,10 +41,23 @@ SDL_Renderer * create_emu_window()
     return renderer;
 }
 
-// void run_gui(nk_context * ctx) {
-
-// }
-
+void handle_sdl_event(Emu * emu, SDL_Event * event, int * emulator_on_off_state) { 
+    switch(event->type) {
+        case SDL_QUIT:
+            *emulator_on_off_state = EMU_OFF;
+            break;
+        case SDL_KEYUP:
+        case SDL_KEYDOWN:
+            for(int i = 0; i < 16; ++i) {
+                if(event->key.keysym.sym == key_map[i]) {
+                    const unsigned char state = (event->type == SDL_KEYDOWN) ? 1 : 0;
+                    emu->keys[i] = state;
+                }
+            }
+            break;
+    }
+    return;
+}
 
 void update_screen_pixels(Emu * emu, SDL_Renderer * emu_renderer) {
     unsigned short pp = 0;

@@ -1,4 +1,5 @@
 chip-8
 .idea
-.vscode
+.vscode/
 chip-8.dSYM
+cimgui

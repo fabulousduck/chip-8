@@ -1,11 +1,14 @@
 #pragma once
 
+#define EMU_OFF 0
+#define EMU_ON 1
 #define PIXEL_WIDTH 20
 #define PIXEL_HEIGHT 20
 #define EMU_WIDTH 64 * PIXEL_WIDTH
 #define EMU_HEIGHT 32 * PIXEL_HEIGHT
 #define PROGRAM_MEM_SPACE_START 512
 #define SPRITE_WIDTH 8
+
 
 //memory map for the emu
 //  0x000 - 0x1FF : Emu interpreter (including the font set)
@@ -28,4 +31,5 @@ typedef struct emu_t
     unsigned short drawflag;    //draw flag
 } Emu;
 
-void init_emu(Emu *, char *);
+void prepare_emu(Emu *, char *);
+void start_emu(Emu *);

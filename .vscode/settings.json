@@ -5,6 +5,7 @@
         "iterator": "c",
         "emu.h": "c",
         "nuklear_sdl_gl3.h": "c",
-        "nuklear.h": "c"
+        "nuklear.h": "c",
+        "ios": "c"
     }
 }

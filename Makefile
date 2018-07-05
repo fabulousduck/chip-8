@@ -1,6 +1,6 @@
 CC=gcc
 
-OBJS=main.c src/emu.c src/wm.c src/memory_mapper.c
+OBJS=main.c src/emulator/emu.c src/emulator/wm.c src/emulator/cycle.c
 
 FLAGS = -Wall -g -O2
 
