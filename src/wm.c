@@ -1,4 +1,5 @@
 #include <SDL2/SDL.h>
+
 #include "emu.h"
 #include "wm.h"
 #include "memory_mapper.h"
@@ -29,7 +30,7 @@ SDL_Renderer * create_emu_window()
     SDL_Init(SDL_INIT_VIDEO);
 
 
-    window = SDL_CreateWindow("chip-8", 0, 0, EMU_WIDTH, EMU_HEIGHT, 0);
+    window = SDL_CreateWindow("chip-8", 0, 0, EMU_WIDTH, EMU_HEIGHT,0);
     renderer = SDL_CreateRenderer(window, -1, 0);
     if(window == NULL) {
         printf("%s\n", SDL_GetError());
@@ -41,10 +42,12 @@ SDL_Renderer * create_emu_window()
     return renderer;
 }
 
+// void run_gui(nk_context * ctx) {
+
+// }
+
 
 void update_screen_pixels(Emu * emu, SDL_Renderer * emu_renderer) {
-
-
     unsigned short pp = 0;
     for(int y = 0; y < EMU_HEIGHT; y += PIXEL_HEIGHT) {
         for(int x = 0; x < EMU_WIDTH; x += PIXEL_WIDTH) {

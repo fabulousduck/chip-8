@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <SDL2/SDL.h>
+
 #include "src/emu.h"
 #include "src/wm.h"
 #include "src/memory_mapper.h"
@@ -13,16 +14,16 @@ int main(int argc, char * argv[])
     //setup variables for SDL2
     SDL_Event event;
     int sdl_running = 1;
-
-    Emu *emu = malloc(sizeof(Emu));
-    init_emu(emu, "./games/TETRIS");
-    
-
-    SDL_Renderer * emu_renderer = create_emu_window();
     struct timespec tim, tim2;
+    Emu *emu = malloc(sizeof(Emu));
+    SDL_Renderer * emu_renderer = create_emu_window();    
+    
+    init_emu(emu, "./games/TETRIS");
+    SDL_Delay(1);
+
     tim.tv_sec = 0;
     tim.tv_nsec = 1600000; //if you want the real old hardware chip-8 expirience, set this to 160000000. This is basically downclocking your CPU cycle speed
-    SDL_Delay(1);
+    
     while(sdl_running == 1) {
         while(SDL_PollEvent(&event)) {
             switch(event.type) {
@@ -39,24 +40,22 @@ int main(int argc, char * argv[])
                     }
                     break;
             }
-            if(event.type == SDL_QUIT) {
-                sdl_running = 0;
-            }
         }
+        
         emulate_cycle(emu, emu_renderer, &event);
+        
         if(emu->drawflag == 1) {
             update_screen_pixels(emu,emu_renderer);
             emu->drawflag = 0;
         }
-        //set keys
 
-        //this is done so SDL does not exit early through pointer resets
+        //timers
         nanosleep(&tim, &tim2);
         if(emu->delay_timer != 0) {
             --emu->delay_timer;
         }
         if(emu->sound_timer != 0) {
-            -- emu->sound_timer;
+            --emu->sound_timer;
         }
     }
 }

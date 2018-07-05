@@ -2,6 +2,9 @@
     "C_Cpp.intelliSenseEngineFallback": "Disabled",
     "files.associations": {
         "sdl.h": "c",
-        "iterator": "c"
+        "iterator": "c",
+        "emu.h": "c",
+        "nuklear_sdl_gl3.h": "c",
+        "nuklear.h": "c"
     }
 }
