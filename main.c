@@ -6,7 +6,7 @@
 #include "src/wm.h"
 #include "src/memory_mapper.h"
 
-void emulate_cycle(Emu * emu, SDL_Renderer * renderer);
+void emulate_cycle(Emu * emu, SDL_Renderer * renderer, SDL_Event *);
 
 int main(int argc, char * argv[])
 {
@@ -15,22 +15,38 @@ int main(int argc, char * argv[])
     int sdl_running = 1;
 
     Emu *emu = malloc(sizeof(Emu));
-    init_emu(emu, "./games/PONG");
+    init_emu(emu, "./games/TETRIS");
     
 
     SDL_Renderer * emu_renderer = create_emu_window();
     struct timespec tim, tim2;
     tim.tv_sec = 0;
-    tim.tv_nsec = 16000000;
+    tim.tv_nsec = 1600000; //if you want the real old hardware chip-8 expirience, set this to 160000000. This is basically downclocking your CPU cycle speed
+    SDL_Delay(1);
     while(sdl_running == 1) {
         while(SDL_PollEvent(&event)) {
+            switch(event.type) {
+                case SDL_QUIT:
+                    sdl_running = 0;
+                    break;
+                case SDL_KEYUP:
+                case SDL_KEYDOWN:
+                    for(int i = 0; i < 16; ++i) {
+                        if(event.key.keysym.sym == key_map[i]) {
+                            const unsigned char state = (event.type == SDL_KEYDOWN) ? 1 : 0;
+                            emu->keys[i] = state;
+                        }
+                    }
+                    break;
+            }
             if(event.type == SDL_QUIT) {
                 sdl_running = 0;
             }
         }
-        emulate_cycle(emu, emu_renderer);
+        emulate_cycle(emu, emu_renderer, &event);
         if(emu->drawflag == 1) {
             update_screen_pixels(emu,emu_renderer);
+            emu->drawflag = 0;
         }
         //set keys
 
@@ -42,11 +58,10 @@ int main(int argc, char * argv[])
         if(emu->sound_timer != 0) {
             -- emu->sound_timer;
         }
-        SDL_Delay(1);
     }
 }
 
-void emulate_cycle(Emu * emu, SDL_Renderer * renderer)
+void emulate_cycle(Emu * emu, SDL_Renderer * renderer, SDL_Event * event)
 {
     unsigned int opcode = emu->memory[emu->pc] << 8 | emu->memory[emu->pc +1];
     
@@ -115,10 +130,12 @@ void emulate_cycle(Emu * emu, SDL_Renderer * renderer)
                 case 0x0000:
                     //sets V[X] to the value of V[Y]
                     emu->V[(opcode & 0x0F00) >> 8] = emu->V[(opcode & 0x00F0) >> 4];
+                    emu->pc += 2;
                     break;
                 case 0x0001:
                     //sets V[X] to (V[X] OR V[Y]) 
                    emu->V[(opcode & 0x0F00) >> 8] |= emu->V[(opcode & 0x00F0) >> 4];
+                   emu->pc += 2;
                     break;
                 case 0x0002:
                     //sets V[X] to (V[X] AND V[Y]) 
@@ -130,19 +147,45 @@ void emulate_cycle(Emu * emu, SDL_Renderer * renderer)
                     emu->V[(opcode & 0x0F00) >> 8] ^= emu->V[(opcode & 0x00F0) >> 4];
                     break;
                 case 0x0004:
-                    //adds V[X] to V[Y] use carry flag if needed
+                        if(((int)emu->V[(opcode & 0x0F00) >> 8 ] + (int)emu->V[(opcode & 0x00F0) >> 4]) < 256) {
+                            emu->V[0xF] &= 0;
+                        } else {
+                            emu->V[0xF] = 1;
+                        }
+                        emu->V[(emu->opcode & 0x0F00) >> 8] += emu->V[(opcode & 0x00F0) >> 4];
+                        emu->pc += 2;
                     break;
                 case 0x0005:
                     //subtracts V[Y] from V[X]. when there is a borrow carry flag is set to 0; and 1 when there is not a borrow
+                        if(((int)emu->V[(opcode & 0x0F00) >> 8 ] - (int)emu->V[(opcode & 0x00F0) >> 4]) >= 0){
+                            emu->V[0xF] = 1;
+                        } else {
+                            emu->V[0xF] &= 0;
+                        }
+                        emu->V[(opcode & 0x0F00) >> 8] -= emu->V[(opcode & 0x00F0) >> 4];
+                        emu->pc += 2;
                     break;
                 case 0x0006:
                     //shifts V[Y] right by one and copies the result to V[X]. V[0xF] is set to the least significant bit of V[Y] before the shift
+                        emu->V[0xF] = emu->V[(opcode & 0x0F00) >> 8] & 7;
+                        emu->V[(opcode & 0x0F00) >> 8] = emu->V[(opcode & 0x0F00) >> 8] >> 1;
+                        emu->pc += 2;
                     break;
                 case 0x0007:
                     //sets V[X] to (V[Y] - V[X]). V[0xF] is set to 0 when there is a borrow. it is set to 1 when there is no borrow
+                        if(((int)emu->V[(opcode & 0x0F00) >> 8] - (int)emu->V[(opcode & 0x00F0) >> 4]) > 0) {
+                            emu->V[0xF] = 1;
+                        } else {
+                            emu->V[0xF] &= 0;
+                        }
+                        emu->V[(opcode & 0x0F00) >> 8] = emu->V[(opcode & 0x00F0) >> 4] - emu->V[(opcode & 0x0F00) >> 8];
+                        emu->pc += 2;
                     break;                
                 case 0x000E:
                     //shifts V[Y] left by one and copies the result to V[X]. V[0xF] is set to the value of the most significant bit before the shift
+                        emu->V[0xF] = emu->V[(opcode & 0x0F00) >> 8] >> 7;
+                        emu->V[(opcode & 0x0F00) >> 8] = emu->V[(opcode & 0x0F00) >> 8] << 1;
+                        emu->pc += 2;
                     break;
             }
             break;
@@ -192,10 +235,10 @@ void emulate_cycle(Emu * emu, SDL_Renderer * renderer)
                                 emu->V[0xF] = 1;
                             }
                             emu->gfx[x + row_x_index + ((y + i) * 64)] ^= 1; //if LHS XOR RHS. LHS = 1
-                            emu->drawflag = 1;
                         }
                     }
-                }   
+                }
+                emu->drawflag = 1;
                 emu->pc += 2;
                 break;
             }
@@ -203,11 +246,17 @@ void emulate_cycle(Emu * emu, SDL_Renderer * renderer)
             switch (opcode & 0x000F) {
                 case 0x000E:
                     //skips the next instruction of the key stored in V[X] is pressed
-                    printf("ETA YEEEEEE\n");
-                    // emu->pc += 4;
+                    if(emu->keys[emu->V[(opcode & 0x0F00) >> 8]]) {
+                        emu->pc += 2;
+                    }
+                    emu->pc += 2;
                     break;
                 case 0x0001:
                     //skips the next instruction if the key stored in V[X] is not pressed
+                    if(!emu->keys[emu->V[(opcode & 0x0F00) >> 8]]) {
+                        emu->pc += 2;
+                    }
+                    emu->pc += 2;
                     break;
             }
             break;
@@ -274,7 +323,7 @@ void emulate_cycle(Emu * emu, SDL_Renderer * renderer)
                     //emu->I is increased for every value written
                     for(int i = 0; i <= (opcode & 0x0F00) >> 8; ++i) {
                         emu->memory[emu->I + i] = emu->V[i];
-                        ++emu->I;
+                        // ++emu->I;
                     }
                     emu->pc += 2;
                     break;
@@ -282,8 +331,8 @@ void emulate_cycle(Emu * emu, SDL_Renderer * renderer)
                     //fills V[0] to V[X] (including V[X]) with the values starting at memory address emu->I.
                     //emu->I is increased for every value written
                     for(int i = 0; i <= ((opcode & 0x0F00) >> 8); ++i) {
-                        emu->V[i] = emu->memory[emu->I];
-                        ++emu->I;
+                        emu->V[i] = emu->memory[emu->I + i];
+                        // ++emu->I;
                     }
                     emu->pc += 2;
                     break;

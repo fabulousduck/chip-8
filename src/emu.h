@@ -1,7 +1,7 @@
 #pragma once
 
-#define PIXEL_WIDTH 10
-#define PIXEL_HEIGHT 10
+#define PIXEL_WIDTH 20
+#define PIXEL_HEIGHT 20
 #define EMU_WIDTH 64 * PIXEL_WIDTH
 #define EMU_HEIGHT 32 * PIXEL_HEIGHT
 #define PROGRAM_MEM_SPACE_START 512
@@ -18,7 +18,7 @@ typedef struct emu_t
     unsigned char delay_timer;
     unsigned char sound_timer;
     unsigned char memory[4096];
-    unsigned char key[16];      //keypad state (this is hex based)
+    unsigned char keys[16];      //keypad state (this is hex based)
     unsigned char V[16];        //chip-8 only has 15 registers for use, F register is the carry flag
     unsigned short I;           //this is the index register
     unsigned short pc;          //this is the program counter

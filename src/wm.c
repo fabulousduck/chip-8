@@ -52,6 +52,10 @@ void update_screen_pixels(Emu * emu, SDL_Renderer * emu_renderer) {
                 SDL_Rect pixel = {x,y,PIXEL_WIDTH,PIXEL_HEIGHT};
                 SDL_SetRenderDrawColor(emu_renderer, 255,255,255, 255);
                 SDL_RenderDrawRect(emu_renderer, &pixel);
+            } else {
+                SDL_Rect pixel = {x,y,PIXEL_WIDTH,PIXEL_HEIGHT};
+                SDL_SetRenderDrawColor(emu_renderer, 0,0,0,0);
+                SDL_RenderDrawRect(emu_renderer, &pixel); 
             }
             ++pp;
         }
@@ -73,9 +77,4 @@ void store_key_input(Emu * emu, SDL_Event * event, unsigned int storage_register
         }
     }
     return;
-}
-
-//returns 1 if true, 0 if false
-int check_key_up(int key) {
-    
 }
