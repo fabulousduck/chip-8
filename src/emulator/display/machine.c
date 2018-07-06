@@ -1,7 +1,8 @@
 #include <SDL2/SDL.h>
 
+#include "../../machine/machine.h"
+#include "../emulator.h"
 #include "machine.h"
-#include "wm.h"
 
 unsigned int key_map[16] = {
     SDLK_0,
@@ -22,29 +23,10 @@ unsigned int key_map[16] = {
     SDLK_f
 };
 
-SDL_Renderer * create_emu_window()
-{
-    SDL_Window *window;
-    SDL_Renderer *renderer;
-    SDL_Init(SDL_INIT_VIDEO);
-
-
-    window = SDL_CreateWindow("chip-8", 0, 0, EMU_WIDTH, EMU_HEIGHT,0);
-    renderer = SDL_CreateRenderer(window, -1, 0);
-    if(window == NULL) {
-        printf("%s\n", SDL_GetError());
-    }
-    //fix for linux systems
-    SDL_SetRenderDrawColor(renderer, 0,0,0, 255);
-    SDL_RenderClear(renderer);
-    SDL_RenderPresent(renderer);
-    return renderer;
-}
-
-void handle_sdl_event(Machine * machine, SDL_Event * event, int * emulator_on_off_state) { 
+void handle_sdl_event(Machine * machine, SDL_Event * event) { 
     switch(event->type) {
         case SDL_QUIT:
-            *emulator_on_off_state = MACHINE_OFF;
+            machine->power_state = MACHINE_OFF;
             break;
         case SDL_KEYUP:
         case SDL_KEYDOWN:
@@ -61,8 +43,8 @@ void handle_sdl_event(Machine * machine, SDL_Event * event, int * emulator_on_of
 
 void update_screen_pixels(Machine * machine, SDL_Renderer * emu_renderer) {
     unsigned short pp = 0;
-    for(int y = 0; y < EMU_HEIGHT; y += PIXEL_HEIGHT) {
-        for(int x = 0; x < EMU_WIDTH; x += PIXEL_WIDTH) {
+    for(int y = 0; y < MACHINE_HEIGHT; y += PIXEL_HEIGHT) {
+        for(int x = 0; x < MACHINE_WIDTH; x += PIXEL_WIDTH) {
             if(machine->gfx[pp] == 1) {
                 SDL_Rect pixel = {x,y,PIXEL_WIDTH,PIXEL_HEIGHT};
                 SDL_SetRenderDrawColor(emu_renderer, 255,255,255, 255);

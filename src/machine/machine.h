@@ -1,11 +1,9 @@
 #pragma once
 
-#define MACHINE_OFF 0
-#define MACHINE_ON 1
 #define PIXEL_WIDTH 20
 #define PIXEL_HEIGHT 20
-#define EMU_WIDTH 64 * PIXEL_WIDTH
-#define EMU_HEIGHT 32 * PIXEL_HEIGHT
+#define MACHINE_WIDTH 64 * PIXEL_WIDTH
+#define MACHINE_HEIGHT 32 * PIXEL_HEIGHT
 #define PROGRAM_MEM_SPACE_START 512
 #define EMU_MEMORY_SIZE 4096
 #define SPRITE_WIDTH 8
@@ -18,7 +16,8 @@
 
 typedef struct machine_t
 {
-    unsigned char gfx[EMU_WIDTH * EMU_HEIGHT];
+    unsigned int power_state; //this is just so it can turn itself off
+    unsigned char gfx[MACHINE_WIDTH * MACHINE_HEIGHT];
     unsigned char delay_timer;
     unsigned char sound_timer;
     unsigned char memory[EMU_MEMORY_SIZE];

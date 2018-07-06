@@ -4,8 +4,9 @@
 #include <SDL2/SDL.h>
 #include "cycle.h"
 #include "machine.h"
-#include "wm.h"
-
+#include "../emulator/emulator.h"
+#include "../emulator/display/window.h"
+#include "../emulator/display/machine.h"
 
 unsigned char fontset[80] = 
 {
@@ -40,21 +41,20 @@ void start_machine(Machine * machine) {
     timer.tv_nsec = 1600000; //if you want the real old hardware chip-8 expirience, set this to 160000000. This is basically downclocking your CPU cycle speed
     timer2.tv_sec = 0;
     timer2.tv_nsec = 0;
-    
-    int * emulator_on_off_state = malloc(sizeof(int));
-    *emulator_on_off_state = MACHINE_ON;
-    
-    SDL_Renderer * renderer = create_emu_window();
-    SDL_Delay(1);    
-    while(*emulator_on_off_state == MACHINE_ON) {
+
+    SDL_Renderer * renderer = create_window_with_renderer("chip-8", MACHINE_WIDTH, MACHINE_HEIGHT,0,0);
+    SDL_Delay(1);
+
+    machine->power_state = MACHINE_ON;
+
+    while(machine->power_state == MACHINE_ON) {
         while(SDL_PollEvent(&event)) {
-            handle_sdl_event(machine, &event, emulator_on_off_state);
+            handle_sdl_event(machine, &event);
         }
         emulate_cycle(machine, renderer, &event);
         update_draw_flag(machine, renderer);
         update_timers(machine, timer, timer2);
     }
-    free(emulator_on_off_state);
     return;
 }
 
@@ -77,6 +77,7 @@ void update_timers(Machine * machine, struct timespec timer, struct timespec tim
 void prepare_machine(Machine * machine)
 {
     //init registers and memory once
+    machine->power_state = MACHINE_OFF;
     machine->pc = PROGRAM_MEM_SPACE_START;
     machine->opcode = 0;
     machine->I = 0;

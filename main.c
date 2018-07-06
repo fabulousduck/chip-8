@@ -2,11 +2,9 @@
 #include <stdlib.h>
 #include <time.h>
 #include <getopt.h>
-#include <SDL2/SDL.h>
 
-#include "src/debugger/debugger.h"
 #include "src/machine/machine.h"
-#include "src/machine/wm.h"
+#include "src/debugger/debugger.h"
 #include "src/emulator/emulator.h"
 
 int main(int argc, char * argv[])

@@ -1,6 +1,6 @@
 #include <SDL2/SDL.h>
 #include "machine.h"
-#include "wm.h"
+#include "../emulator/display/machine.h"
 
 void emulate_cycle(Machine * machine, SDL_Renderer * renderer, SDL_Event * event)
 {
@@ -184,6 +184,7 @@ void emulate_cycle(Machine * machine, SDL_Renderer * renderer, SDL_Event * event
                     break;
                 case 0x000A:
                     //A key press is awaited and then stored in V[X]. (blocking operation. all execution is halted untill next key event)
+                    //TODO should this not be done with a halt flag or something ?
                     {
                         printf("keypress awaited : \n");
                         SDL_Event event;

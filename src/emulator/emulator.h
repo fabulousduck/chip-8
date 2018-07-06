@@ -1,3 +1,5 @@
+#pragma once
+
 #include "../machine/machine.h"
 
 #define MACHINE_ON 1
@@ -5,7 +7,6 @@
 
 typedef struct emulator_t {
     Machine * machine;
-    unsigned int power_state;
     unsigned int game_loaded;
 } Emulator;
 
