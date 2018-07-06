@@ -1,5 +1,5 @@
 # chip-8
-Chip-8 emu in C
+Chip-8 machine in C
 
 
 ## Opcodes

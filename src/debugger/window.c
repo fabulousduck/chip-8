@@ -1,4 +1,6 @@
 #include <SDL2/SDL.h>
+#include "window.h"
+
 
 SDL_Window * create_debugger_window()
 {
