@@ -3,4 +3,6 @@
 
 SDL_Window * create_window(char *, int, int, int, int);
 SDL_Renderer * create_window_with_renderer(char *, int, int, int, int);
+void create_nk_window(SDL_Window *);
+
 
