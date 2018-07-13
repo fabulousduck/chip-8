@@ -38,7 +38,7 @@ void start_machine(Machine * machine) {
     struct timespec timer, timer2;
 
     timer.tv_sec = 0;
-    timer.tv_nsec = 1600000; //if you want the real old hardware chip-8 expirience, set this to 160000000. This is basically downclocking your CPU cycle speed
+    timer.tv_nsec = 1600000; //if you want the real old hardware chip-8 expirience, set this to 160000000. This is basically downclocking your timer speed
     timer2.tv_sec = 0;
     timer2.tv_nsec = 0;
 

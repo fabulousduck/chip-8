@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <getopt.h>
+#include <pthread.h>
 
 #include "src/machine/machine.h"
 #include "src/debugger/debugger.h"
@@ -37,7 +38,9 @@ int main(int argc, char * argv[])
         }
     }
     if(emulator->game_loaded == 1) {
-        start_machine(machine);
+        pthread_t machine_thread_id;
+        emulator->machine_thread_id = machine_thread_id;
+        pthread_create(&machine_thread_id, NULL, start_machine, machine);
     }
 }
 
