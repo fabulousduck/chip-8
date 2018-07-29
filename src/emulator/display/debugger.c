@@ -2,9 +2,9 @@
 #include "debugger.h"
 #include "window.h"
 #include "../../../nuklear/nuklear.h"
+#include "../emulator.h"
 
-//we use the SDL bindings for nuklear so we need to provide it a SDL window
-void init_debugger_window(SDL_Window * window) {
-    struct nk_context * context = create_nk_context(window);
-    // create_nk_window(context);
+
+void delegate_debugger_window_event(Emulator * emulator, SDL_Event * event) {
+
 }

@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <pthread.h>
 #include <SDL2/SDL.h>
 #include "cycle.h"
 #include "machine.h"
@@ -32,31 +33,6 @@ unsigned int get_file_length(FILE *);
 void load_game(Machine *, char *);
 void update_draw_flag(Machine *, SDL_Renderer *);
 void update_timers(Machine *, struct timespec, struct timespec);
-
-void start_machine(Machine * machine) {
-    SDL_Event event;
-    struct timespec timer, timer2;
-
-    timer.tv_sec = 0;
-    timer.tv_nsec = 1600000; //if you want the real old hardware chip-8 expirience, set this to 160000000. This is basically downclocking your timer speed
-    timer2.tv_sec = 0;
-    timer2.tv_nsec = 0;
-
-    SDL_Renderer * renderer = create_window_with_renderer("chip-8", MACHINE_WIDTH, MACHINE_HEIGHT,0,0);
-    SDL_Delay(1);
-
-    machine->power_state = MACHINE_ON;
-
-    while(machine->power_state == MACHINE_ON) {
-        while(SDL_PollEvent(&event)) {
-            handle_sdl_event(machine, &event);
-        }
-        emulate_cycle(machine, renderer, &event);
-        update_draw_flag(machine, renderer);
-        update_timers(machine, timer, timer2);
-    }
-    return;
-}
 
 void update_draw_flag(Machine * machine, SDL_Renderer * renderer) {
     if(machine->drawflag == 1) {
@@ -91,7 +67,7 @@ void prepare_machine(Machine * machine)
 }
 
 void reset_game_memory(Machine * machine) {
-    unsigned char * game_memory =machine->memory + PROGRAM_MEM_SPACE_START;
+    unsigned char * game_memory = machine->memory + PROGRAM_MEM_SPACE_START;
     memset(game_memory, 0, sizeof(machine->memory) - PROGRAM_MEM_SPACE_START);
     return;
 }

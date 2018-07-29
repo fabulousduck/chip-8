@@ -1,5 +1,7 @@
 #pragma once
 
+#include <SDL2/SDL.h>
+
 #define PIXEL_WIDTH 20
 #define PIXEL_HEIGHT 20
 #define MACHINE_WIDTH 64 * PIXEL_WIDTH
@@ -32,5 +34,6 @@ typedef struct machine_t
 } Machine;
 
 void prepare_machine(Machine *);
-void start_machine(Machine *);
 void load_game(Machine *, char *);
+void update_draw_flag(Machine *, SDL_Renderer *);
+void update_timers(Machine *, struct timespec, struct timespec);

@@ -3,6 +3,8 @@
 #include <time.h>
 #include <getopt.h>
 #include <pthread.h>
+#include <unistd.h>
+#include<string.h>
 
 #include "src/machine/machine.h"
 #include "src/debugger/debugger.h"
@@ -24,8 +26,11 @@ int main(int argc, char * argv[])
     while ((c = getopt_long(argc, argv, "f:d", long_options, &opt_index)) != -1) {
         switch (c) {
         case 'd':
-            printf("Booting with debugger\n");
-            init_debugger(machine);
+            emulator->debugger_active = 1;
+            // printf("Booting with debugger\n");
+            // pthread_t debugger_thread_id;
+            // emulator->debugger_thread_id;
+            // init_debugger(machine);
             break;
         case 'f':
             load_game(emulator->machine, optarg);
@@ -37,10 +42,8 @@ int main(int argc, char * argv[])
             exit(EXIT_FAILURE);
         }
     }
-    if(emulator->game_loaded == 1) {
-        pthread_t machine_thread_id;
-        emulator->machine_thread_id = machine_thread_id;
-        pthread_create(&machine_thread_id, NULL, start_machine, machine);
-    }
+
+    start_emulator(emulator);
+    return 0;
 }
 

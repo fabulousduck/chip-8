@@ -186,11 +186,16 @@ void emulate_cycle(Machine * machine, SDL_Renderer * renderer, SDL_Event * event
                     //A key press is awaited and then stored in V[X]. (blocking operation. all execution is halted untill next key event)
                     //TODO should this not be done with a halt flag or something ?
                     {
+                        int key_down_event_passed = 0;
                         printf("keypress awaited : \n");
+
                         SDL_Event event;
-                        while(SDL_PollEvent(&event)) {
-                            if(event.type == SDL_KEYDOWN) {
-                                store_key_input(machine, &event, X);
+                        while(!key_down_event_passed) {
+                            while(SDL_PollEvent(&event)) {
+                                if(event.type == SDL_KEYDOWN) {
+                                    store_key_input(machine, &event, X);
+                                    key_down_event_passed = 1;
+                                }
                             }
                         }
                         machine->pc += 2;
