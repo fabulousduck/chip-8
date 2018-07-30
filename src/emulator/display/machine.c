@@ -1,8 +1,9 @@
 #include <SDL2/SDL.h>
-
+#include "../../../nuklear/nuklear.h"
 #include "../../machine/machine.h"
 #include "../emulator.h"
 #include "machine.h"
+#include "nuklear_sdl_binding.h"
 
 unsigned int key_map[16] = {
     SDLK_0,
@@ -22,6 +23,15 @@ unsigned int key_map[16] = {
     SDLK_e,
     SDLK_f
 };
+
+void render_machine_ui(Machine * machine, struct nk_context * context) {
+        if (nk_begin(context, "emulator", nk_rect(50, 50, 230, 250),
+            NK_WINDOW_BORDER|NK_WINDOW_MOVABLE|NK_WINDOW_SCALABLE|
+            NK_WINDOW_MINIMIZABLE|NK_WINDOW_TITLE))
+        {
+            nk_layout_row_static(context, 100, 100, 2);
+        } 
+}
 
 void handle_machine_sdl_event(Machine * machine, SDL_Event * event) {
     printf("event : %d\n", event->type);

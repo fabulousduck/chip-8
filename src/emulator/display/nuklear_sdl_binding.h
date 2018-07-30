@@ -10,13 +10,20 @@
  *
  * ===============================================================
  */
+
 #ifndef NK_SDL_GL3_H_
 #define NK_SDL_GL3_H_
+
+
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_opengl.h>
 
+// #include "../../../nuklear/nuklear.h"
+
+
 NK_API struct nk_context*   nk_sdl_init(SDL_Window *win);
+
 NK_API void                 nk_sdl_font_stash_begin(struct nk_font_atlas **atlas);
 NK_API void                 nk_sdl_font_stash_end(void);
 NK_API int                  nk_sdl_handle_event(SDL_Event *evt);
