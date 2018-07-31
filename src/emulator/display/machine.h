@@ -1,9 +1,7 @@
 #pragma once
 
 #include <SDL2/SDL.h>
-#include "../../../nuklear/nuklear.h"
-
-#include "../../machine/machine.h"
+#include "nuklear_sdl_binding.h"
 
 SDL_Renderer * create_emu_window();
 void handle_machine_sdl_event(Machine *, SDL_Event *);

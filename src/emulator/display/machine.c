@@ -1,9 +1,8 @@
 #include <SDL2/SDL.h>
-#include "../../../nuklear/nuklear.h"
+#include "nuklear_sdl_binding.h"
 #include "../../machine/machine.h"
 #include "../emulator.h"
 #include "machine.h"
-#include "nuklear_sdl_binding.h"
 
 unsigned int key_map[16] = {
     SDLK_0,

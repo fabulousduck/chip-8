@@ -8,6 +8,7 @@
 #define EMULATOR_ON 1
 #define EMULATOR_OFF 0
 
+
 typedef struct emulator_t {
     Machine * machine;
     unsigned int emulator_active;

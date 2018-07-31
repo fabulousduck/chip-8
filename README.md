@@ -1,95 +1,37 @@
-# chip-8
-Chip-8 machine in C
+#chip-8
+
+a small chip-8 interpreter with debugger
 
 
-## Opcodes
-This is a short explenations on how opcodes are decoded
+#status
 
+on hold
 
-### opcode from memory.
+# what it do ?
 
-When reading an opcode it is important to understand that an opcode is 2 bytes long. so we will need to concat 2 bytes together to get the full opcode.
+it runs simple chip-8 roms
 
-The opcodes are pointed at by the **program counter** `pc`.
+# what do developer still have to do ?
 
-so the bytes we will want to read are
-`memory[pc]` and `memory[pc+1]`.
+ - make a stable build without the debugger
+ - make nuklear compile with the SDL2_Opengl3 backend
+ - make the debugger
 
-to add these to together we will need to append the first to the second which is done in the following way: 
-`int opcode = memory[pc] << 8 | memory[pc+1];`
-What is happening here is the following :
+# how do compile
 
-We have memory[pc], which we will assume to be `2F` for now which equals to `0010 1111` in binary.
+## osx
 
-when we apply a `<<` which is a **left bit shift**, we shift the `LHS` by `RHS` bytes.
-In our case this is 8. This results in us ending up with `0010 1111 0000 0000 `.
+```bash
+    $ git clone git@github.com:fabulousduck/chip-8.git
+    $ cd chip-8
+    $ make
+    $ ./chip-8 -f games/<game name>
+```
 
-This is enough space to move `memory[pc+1]` into. So by doing `| memory[pc+1]` we essentially **shift it into the empty 8 bytes**. (We will assume `memory[pc+1]` is '5B');
+## linux
 
-This results in: `0010 1111 0101 1011` which translates into `2F5B` in hex.
+TODO
 
-## decoding the opcode
+## windows
 
-Now that we have our opcode `2F5B`, we need to check what it means.
-
-
-Before we can do that we need to define a few things about opcodes namely how the table represents them.
-
-### `X`
-
-In our table, X can be any integer in range 0 - F.
-
-This integer represents a register in the register table.
-
-Within the table, we will represent any register in the register table as follows:
-
-`V[X]` where `V` is the register table and `X` the integer obtained from the opcode.
-
-### `Y`
-
-Same as X.
-
-This serves as a variable when we need to for instance compare registers
-
-I.E
-
-`V[X] != V[Y]`
-
-### `N`
-
-`N` is used to represent an `immidiate` vale. Meaning that it is to be interpreted literally.
-
-### `NN`
-
-`NN` is used to represent a byte of data.
-
-### `NNN`
-
-`NNN` is used to represent a memory address.
-
-
-
-
-
-
-## random shit notes
-
-if we wish to shift a hex value, we must shift it by N*4 positions
-
-example:
-
-
-`0x0E00` is `0000 1110 0000 0000 0000` in binary
-
-we see here that each `0` in hex is 4  `0`'s in binary
-
-Thus we must shift N*4 positions
-
-
-
-
-
-
-2F5B
-F000 &
-2000
+TODO

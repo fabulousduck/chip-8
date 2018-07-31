@@ -12,6 +12,7 @@ EMULATOR_OBJS = \
 	src/emulator/emulator.c
 
 DISPLAY_OBJS = \
+	src/emulator/display/nuklear_sdl_binding.c \
 	src/emulator/display/debugger.c \
 	src/emulator/display/machine.c \
 	src/emulator/display/window.c

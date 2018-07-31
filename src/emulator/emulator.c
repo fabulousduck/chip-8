@@ -5,8 +5,10 @@
 #include "display/window.h"
 #include "display/machine.h"
 #include "display/debugger.h"
-#include "../../nuklear/nuklear.h"
+
 #include "display/nuklear_sdl_binding.h"
+
+
 
 void prepare_emulator(Emulator * emulator, Machine * machine) {
     prepare_machine(machine);

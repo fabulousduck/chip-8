@@ -17,6 +17,9 @@
         "emulator.h": "c",
         "cycle.h": "c",
         "nuklear_sdl_binding.h": "c",
-        "machine.h": "c"
+        "machine.h": "c",
+        "nkh.h": "c",
+        "glew.h": "c",
+        "sdl_opengl.h": "c"
     }
 }

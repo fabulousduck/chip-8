@@ -1,7 +1,6 @@
 #include <SDL2/SDL.h>
 #include "debugger.h"
 #include "window.h"
-#include "../../../nuklear/nuklear.h"
 #include "../emulator.h"
 
 
