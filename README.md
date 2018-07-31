@@ -1,4 +1,4 @@
-#chip-8
+# chip-8
 
 a small chip-8 interpreter with debugger
 
