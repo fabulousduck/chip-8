@@ -3,7 +3,7 @@
 a small chip-8 interpreter with debugger
 
 
-#status
+# status
 
 on hold
 
