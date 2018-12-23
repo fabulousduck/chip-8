@@ -88,9 +88,8 @@ void load_game(Machine * machine, char * file_path) {
     }
     
     unsigned int bufferSize = get_file_length(fp);
-    fread((machine->memory + PROGRAM_MEM_SPACE_START) , bufferSize, 1, fp); // Read in the entire file into memory
-
-    printf("read %d bytes into memory\n", bufferSize);
+    int bytes_read = fread((machine->memory + PROGRAM_MEM_SPACE_START) , bufferSize, 1, fp); // Read in the entire file into memory
+    printf("read %d bytes into memory\n", bytes_read);
 }
 
 unsigned int get_file_length(FILE * fp) {

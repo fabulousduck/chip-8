@@ -12,7 +12,6 @@ EMULATOR_OBJS = \
 	src/emulator/emulator.c
 
 DISPLAY_OBJS = \
-	src/emulator/display/nuklear_sdl_binding.c \
 	src/emulator/display/debugger.c \
 	src/emulator/display/machine.c \
 	src/emulator/display/window.c
@@ -25,9 +24,7 @@ OBJS=main.c \
 
 FLAGS = -Wall -g -O2
 
-SRC = main.c
+LIBS = -lSDL2
 
-LIBS = -lSDL2 -framework OpenGL -lm -lGLEW
-
-make: SRC
+make: 
 	$(CC) $(OBJS) $(FLAGS) $(LIBS) -o chip-8

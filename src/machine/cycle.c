@@ -1,4 +1,5 @@
 #include <SDL2/SDL.h>
+#include <time.h>
 #include "machine.h"
 #include "../emulator/display/machine.h"
 
