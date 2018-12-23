@@ -36,7 +36,7 @@ void start_emulator(Emulator * emulator) {
     emulator->emulator_active = EMULATOR_ON;
 
     while(emulator->emulator_active == EMULATOR_ON) {
-
+        atexit(SDL_Quit);
         //handle SDL events for both windows
         while(SDL_PollEvent(&event)) {
             handle_machine_sdl_event(emulator->machine, &event);
