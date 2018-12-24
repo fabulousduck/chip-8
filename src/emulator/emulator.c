@@ -22,7 +22,7 @@ void start_emulator(Emulator * emulator) {
     SDL_Event event;
     timer.tv_sec = 0;
     //if you want the real old hardware chip-8 expirience, set this to 160000000. This is basically downclocking your timer speed
-    timer.tv_nsec = 1600000; 
+    timer.tv_nsec = 800000; 
     timer2.tv_sec = 0;
     timer2.tv_nsec = 0;
 
@@ -41,7 +41,9 @@ void start_emulator(Emulator * emulator) {
     emulator->emulator_active = EMULATOR_ON;
 
     while(emulator->emulator_active == EMULATOR_ON) {
-        render_debugger(machine, emu_renderer);
+        if(emulator->debugger_active) {
+            render_debugger(machine, emu_renderer);
+        }
         atexit(SDL_Quit);
         //handle SDL events for both windows
         while(SDL_PollEvent(&event)) {
