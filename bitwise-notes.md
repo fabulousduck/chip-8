@@ -10,7 +10,10 @@ I.E
 if we wish to get 0x2F0 from 0xA2F0 we need to do the following
 
 1010001011110000 //0xA2F0
+
+
 0000111111111111 //0x0FFF
+
 
 ----------------- AND
 
