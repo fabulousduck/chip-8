@@ -27,18 +27,14 @@ int main(int argc, char * argv[])
         switch (c) {
         case 'd':
             emulator->debugger_active = 1;
-            // printf("Booting with debugger\n");
-            // pthread_t debugger_thread_id;
-            // emulator->debugger_thread_id;
             // init_debugger(machine);
             break;
         case 'f':
             load_game(emulator->machine, optarg);
-            printf("%s loaded\n", optarg);
             emulator->game_loaded = 1;
             break;
         default: /* '?' */
-            fprintf(stderr, "Usage: %s [-d debug] [-f -file] filepath\n",argv[0]);
+            fprintf(stderr, "Usage: %s [-d debug mode] [-f -file] filepath\n",argv[0]);
             exit(EXIT_FAILURE);
         }
     }

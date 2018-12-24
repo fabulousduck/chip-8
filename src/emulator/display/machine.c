@@ -51,7 +51,7 @@ void update_screen_pixels(Machine * machine, SDL_Renderer * emu_renderer) {
                 SDL_Rect pixel = {x,y,PIXEL_WIDTH,PIXEL_HEIGHT};
                 SDL_SetRenderDrawColor(emu_renderer, 255,255,255, 255);
                 SDL_RenderDrawRect(emu_renderer, &pixel);
-            } else {
+            } else{
                 SDL_Rect pixel = {x,y,PIXEL_WIDTH,PIXEL_HEIGHT};
                 SDL_SetRenderDrawColor(emu_renderer, 0,0,0,0);
                 SDL_RenderDrawRect(emu_renderer, &pixel); 

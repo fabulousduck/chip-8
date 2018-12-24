@@ -8,6 +8,7 @@
 #define EMULATOR_ON 1
 #define EMULATOR_OFF 0
 
+#define DEBUGGER_WINDOW_MULTIPLIER 0.25
 
 typedef struct emulator_t {
     Machine * machine;
