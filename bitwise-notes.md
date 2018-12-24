@@ -82,8 +82,11 @@ value << N
 now we use a bitwise OR operation on the old value
 
 1010101
+
 0100000
+
 -------- AND ( & )
+
 111010
 
 now the 1 value has been set at the desired position
@@ -106,8 +109,11 @@ to examplify this
 now we can apply an and value to this with our old value on top
 
 111010
+
 101111
+
 ------- AND
+
 101010
 
 this happens because 1 AND 0 is 0, so now the bit is 0
@@ -144,7 +150,9 @@ to examplify
 now we perform an AND operation with this value at the bottom
 
 1010101
+
 0100000
+
 -------- AND
 
 0000000
@@ -154,8 +162,11 @@ now we perform an AND operation with this value at the bottom
 but the oposite is also true
 
 1110101
+
 0100000
+
 -------- AND
+
 0100000
 
 0100000 != decimal(0) so it is IS 1 thus IS SET
