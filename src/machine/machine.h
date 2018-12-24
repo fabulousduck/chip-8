@@ -10,7 +10,6 @@
 #define EMU_MEMORY_SIZE 4096
 #define SPRITE_WIDTH 8
 
-
 //memory map for the machine
 //  0x000 - 0x1FF : Machine interpreter (including the font set)
 //  0x050 - 0x0A0 : Used for the 4x5 pixel font set ( 0 - F)
@@ -23,7 +22,7 @@ typedef struct machine_t
     unsigned char delay_timer;
     unsigned char sound_timer;
     unsigned char memory[EMU_MEMORY_SIZE];
-    unsigned char keys[16];      //keypad state (this is hex based)
+    unsigned char keys[16];     //keypad state (this is hex based)
     unsigned char V[16];        //chip-8 only has 15 registers for use, F register is the carry flag
     unsigned short I;           //this is the index register
     unsigned short pc;          //this is the program counter
@@ -34,6 +33,7 @@ typedef struct machine_t
 } Machine;
 
 void prepare_machine(Machine *);
+void start_machine(Machine *);
 void load_game(Machine *, char *);
 void update_draw_flag(Machine *, SDL_Renderer *);
 void update_timers(Machine *, struct timespec, struct timespec);

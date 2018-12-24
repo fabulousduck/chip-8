@@ -6,9 +6,6 @@
 #include "display/machine.h"
 #include "display/debugger.h"
 
-
-
-
 void prepare_emulator(Emulator * emulator, Machine * machine) {
     prepare_machine(machine);
     emulator->machine = machine;
@@ -40,7 +37,7 @@ void start_emulator(Emulator * emulator) {
         //handle SDL events for both windows
         while(SDL_PollEvent(&event)) {
             handle_machine_sdl_event(emulator->machine, &event);
-        }
+        }  
 
         if(machine->power_state == MACHINE_ON) {
             emulate_cycle(machine, machine_renderer, &event);

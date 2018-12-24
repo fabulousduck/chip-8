@@ -24,7 +24,7 @@ unsigned int key_map[16] = {
 
 
 void handle_machine_sdl_event(Machine * machine, SDL_Event * event) {
-    printf("event : %d\n", event->type);
+
     switch(event->type) {
         case SDL_QUIT:
             machine->power_state = MACHINE_OFF;
