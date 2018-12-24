@@ -1,9 +1,9 @@
 # chip-8
 
-a small chip-8 interpreter with debugger
+a small chip-8 interpreter with fancy memory map
 
 
-# what it do ?
+# what does it do ?
 
 it runs simple chip-8 roms
 
@@ -11,7 +11,7 @@ it runs simple chip-8 roms
 
 - SDL2(-dev)
 
-# how do compile
+# how to compile
 
 ## unix
 
