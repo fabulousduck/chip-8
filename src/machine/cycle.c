@@ -12,6 +12,8 @@ void emulate_cycle(Machine * machine, SDL_Renderer * renderer, SDL_Event * event
     unsigned int NN = opcode & 0x00FF;
     unsigned int NNN = opcode & 0x0FFF;
 
+
+    //more detailed explanation of why this stuff does it the way it does can be found here: https://en.wikipedia.org/wiki/CHIP-8
     switch(opcode & 0xF000) {
         case 0x000:
             switch(opcode & 0x000F) {
