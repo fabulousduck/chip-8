@@ -3,21 +3,25 @@
 #include "machine.h"
 #include "../emulator/display/machine.h"
 
+
 void emulate_cycle(Machine * machine, SDL_Renderer * renderer, SDL_Event * event)
 {
+    
+
     unsigned int opcode = machine->memory[machine->pc] << 8 | machine->memory[machine->pc +1];
     unsigned int X = (opcode & 0x0F00) >> 8;
     unsigned int Y = (opcode & 0x00F0) >> 4;
     unsigned int N = opcode & 0x000F;
     unsigned int NN = opcode & 0x00FF;
     unsigned int NNN = opcode & 0x0FFF;
-
-
+    // printf("%d machin program counter \n", machine->pc);
+    // printf("%04X\n", machine->memory[machine->pc]);
     //more detailed explanation of why this stuff does it the way it does can be found here: https://en.wikipedia.org/wiki/CHIP-8
     switch(opcode & 0xF000) {
         case 0x000:
             switch(opcode & 0x000F) {
                 case 0x000E: //return from subroutine
+                    printf("fuck\n");
                     machine->pc = machine->stack[machine->sp];
                     --machine->sp;
                     machine->pc += 2;
@@ -142,13 +146,13 @@ void emulate_cycle(Machine * machine, SDL_Renderer * renderer, SDL_Event * event
                 //V[0xF] is set to 1 if any screen pixels are flipped from set to unset when the sprite is drawn, and to 0 if that does not happen
                 unsigned short x = machine->V[X];
                 unsigned short y = machine->V[Y];
-
                 machine->V[0xF] = 0;
                 for(unsigned short i = 0; i < N; i++) {
                     unsigned short pixel = machine->memory[machine->I + i];
                     for(int row_x_index = 0; row_x_index < 8; row_x_index++) {
                         //the 0x80 equals 1000 0000. every loop the 1 shifts 1 to the right. and then we take that and OR (mask) it with the bits we have
                         if((pixel & (0x80 >> row_x_index)) != 0) { 
+
                             if(machine->gfx[(x + row_x_index + ((y + i) * 64))] == 1) {
                                 machine->V[0xF] = 1;
                             }
@@ -226,6 +230,7 @@ void emulate_cycle(Machine * machine, SDL_Renderer * renderer, SDL_Event * event
                     machine->pc += 2;
                     break;
                 case 0x0033: //stores V[X] as decimal number in its separate in at memory addresses machine->I / machine->I+1 / machine->I+2
+                             //so for instance. the number 123. would be machine->I = 1. machine->I+1 = 2. machine->I+2 = 3
                     machine->memory[machine->I]     = machine->V[X] / 100;
                     machine->memory[machine->I + 1] = (machine->V[X] / 10) % 10;
                     machine->memory[machine->I + 2] = (machine->V[X] % 100) % 10;

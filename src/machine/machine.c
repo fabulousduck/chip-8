@@ -5,6 +5,7 @@
 #include <SDL2/SDL.h>
 #include "cycle.h"
 #include "machine.h"
+#include "../emulator/timer/timer.h"
 #include "../emulator/emulator.h"
 #include "../emulator/display/window.h"
 #include "../emulator/display/machine.h"
@@ -32,7 +33,7 @@ unsigned char fontset[80] =
 unsigned int get_file_length(FILE *);
 void load_game(Machine *, char *);
 void update_draw_flag(Machine *, SDL_Renderer *);
-void update_timers(Machine *, struct timespec, struct timespec);
+void update_timers(Machine *, Timespec *, Timespec *);
 
 void update_draw_flag(Machine * machine, SDL_Renderer * renderer) {
     if(machine->drawflag == 1) {
@@ -41,9 +42,9 @@ void update_draw_flag(Machine * machine, SDL_Renderer * renderer) {
     }  
 }
 
-void update_timers(Machine * machine, struct timespec timer, struct timespec timer2) {
+void update_timers(Machine * machine, Timespec * timer, Timespec * timer2) {
     if(machine->delay_timer != 0 || machine->sound_timer != 0) {
-        nanosleep(&timer, &timer2);
+        nanosleep(timer, timer2);
         machine->delay_timer != 0 ? --machine->delay_timer : machine->delay_timer;
         machine->sound_timer != 0 ? --machine->sound_timer : machine->sound_timer;
     }
@@ -54,7 +55,9 @@ void prepare_machine(Machine * machine)
 {
     //init registers and memory once
     machine->power_state = MACHINE_OFF;
+    
     machine->pc = PROGRAM_MEM_SPACE_START;
+    printf("machine pc at init %d\n", machine->pc);
     machine->opcode = 0;
     machine->I = 0;
     machine->sp = 0;
@@ -71,9 +74,16 @@ void reset_game_memory(Machine * machine) {
     memset(game_memory, 0, sizeof(machine->memory) - PROGRAM_MEM_SPACE_START);
     return;
 }
+void dumpMem(Machine * machine) {
+    for(int i = 0; i < 4096; i++) {
+        if(i % 16 == 0) {
+            printf("\n %04X | ", i);
+        }
+        printf("%02X ", machine->memory[i]);
+    }
+}
 
 void load_game(Machine * machine, char * file_path) {
-    //check if there is already a game loaded
     for(int i = 0; i < (EMU_MEMORY_SIZE - PROGRAM_MEM_SPACE_START); ++i) {
         if(machine->memory[PROGRAM_MEM_SPACE_START + i] != 0) {
             reset_game_memory(machine);
@@ -90,8 +100,11 @@ void load_game(Machine * machine, char * file_path) {
     unsigned int bufferSize = get_file_length(fp);
     int bytes_read_error = fread((machine->memory + PROGRAM_MEM_SPACE_START) , bufferSize, 1, fp); // Read in the entire file into memory
     (void)bytes_read_error; //this is done so we dont get an unused variable warn with -Wall
+    dumpMem(machine);
     start_machine(machine);
 }
+
+
 
 unsigned int get_file_length(FILE * fp) {
     unsigned int length;

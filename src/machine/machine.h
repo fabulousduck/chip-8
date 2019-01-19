@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SDL2/SDL.h>
+#include "../emulator/timer/timer.h"
 
 #define PIXEL_WIDTH 20
 #define PIXEL_HEIGHT 20
@@ -36,4 +37,4 @@ void prepare_machine(Machine *);
 void start_machine(Machine *);
 void load_game(Machine *, char *);
 void update_draw_flag(Machine *, SDL_Renderer *);
-void update_timers(Machine *, struct timespec, struct timespec);
+void update_timers(Machine *, Timespec *, Timespec *);

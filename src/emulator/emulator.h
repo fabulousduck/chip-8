@@ -8,7 +8,10 @@
 #define EMULATOR_ON 1
 #define EMULATOR_OFF 0
 
-#define DEBUGGER_WINDOW_MULTIPLIER 0.25
+#define DEBUGGER_X_WINDOW_MULTIPLIER 0.25
+#define DEBUGGER_Y_WINDOW_MULTIPLIER 1.25
+
+#define DEBUGGER_FONT_SIZE 25
 
 typedef struct emulator_t {
     Machine * machine;
