@@ -38,3 +38,23 @@ void start_machine(Machine *);
 void load_game(Machine *, char *);
 void update_draw_flag(Machine *, SDL_Renderer *);
 void update_timers(Machine *, Timespec *, Timespec *);
+
+
+
+/*
+0x200    a = 10
+0x204    b = 20
+0x208    for(a != b) {
+0x20B      a++
+0x20F    }
+
+
+
+MOV 10 0x1
+MOV 10 0x2
+0x20F NEQ A B
+ADD 0x1 1
+JMP 0x20F
+*/
+
+

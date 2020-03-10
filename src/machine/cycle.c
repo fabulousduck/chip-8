@@ -17,11 +17,11 @@ void emulate_cycle(Machine * machine, SDL_Renderer * renderer, SDL_Event * event
     // printf("%d machin program counter \n", machine->pc);
     // printf("%04X\n", machine->memory[machine->pc]);
     //more detailed explanation of why this stuff does it the way it does can be found here: https://en.wikipedia.org/wiki/CHIP-8
+    // printf("%04X\n", opcode);
     switch(opcode & 0xF000) {
         case 0x000:
             switch(opcode & 0x000F) {
                 case 0x000E: //return from subroutine
-                    printf("fuck\n");
                     machine->pc = machine->stack[machine->sp];
                     --machine->sp;
                     machine->pc += 2;
@@ -33,7 +33,7 @@ void emulate_cycle(Machine * machine, SDL_Renderer * renderer, SDL_Event * event
             }
             break;
         case 0x1000: //goto 0x0NNN;
-            machine->pc = opcode & NNN;
+            machine->pc = NNN;
             break;
         case 0x2000: //call subroutine at 0x0NNN;
             machine->sp++;
@@ -41,8 +41,10 @@ void emulate_cycle(Machine * machine, SDL_Renderer * renderer, SDL_Event * event
             machine->pc = NNN;
             break;
         case 0x3000: //skips the next instruction if V[X] == NN
-            if(machine->V[X] == NN)
+            if(machine->V[X] == NN){ 
                 machine->pc += 2;
+                printf("\nV[%d](%d) == %d\n", X, machine->V[X], NN);
+            }
             machine->pc += 2;
             break;
         case 0x4000: //skips the next instruction is V[X] != NN
@@ -57,6 +59,7 @@ void emulate_cycle(Machine * machine, SDL_Renderer * renderer, SDL_Event * event
             break;
         case 0x6000: //sets V[X] to value NN
             machine->V[X] = NN;
+            printf("V[%d] is now %d", X, NN);
             machine->pc += 2;
             break;
         case 0x7000: //adds NN to V[X] (Carry flag is not changed)
@@ -81,6 +84,8 @@ void emulate_cycle(Machine * machine, SDL_Renderer * renderer, SDL_Event * event
                     machine->V[X] ^= machine->V[Y];
                     break;
                 case 0x0004:
+                        //adds V[Y] to V[X]
+                    printf(" adding V[%d](%d) to V[%d](%d)\n", X, Y, machine->V[X], machine->V[Y]); 
                         if(((int)machine->V[X] + (int)machine->V[Y]) < 256)
                             machine->V[0xF] &= 0;
                         else
@@ -146,6 +151,7 @@ void emulate_cycle(Machine * machine, SDL_Renderer * renderer, SDL_Event * event
                 //V[0xF] is set to 1 if any screen pixels are flipped from set to unset when the sprite is drawn, and to 0 if that does not happen
                 unsigned short x = machine->V[X];
                 unsigned short y = machine->V[Y];
+                printf("print coords: %d %d\n", x,y);
                 machine->V[0xF] = 0;
                 for(unsigned short i = 0; i < N; i++) {
                     unsigned short pixel = machine->memory[machine->I + i];
@@ -229,8 +235,9 @@ void emulate_cycle(Machine * machine, SDL_Renderer * renderer, SDL_Event * event
                     machine->I = machine->V[X] * 5;
                     machine->pc += 2;
                     break;
-                case 0x0033: //stores V[X] as decimal number in its separate in at memory addresses machine->I / machine->I+1 / machine->I+2
-                             //so for instance. the number 123. would be machine->I = 1. machine->I+1 = 2. machine->I+2 = 3
+                case 0x0033: 
+                    //stores V[X] as decimal number in its separate in at memory addresses machine->I / machine->I+1 / machine->I+2
+                    //so for instance. the number 123. would be machine->I = 1. machine->I+1 = 2. machine->I+2 = 3
                     machine->memory[machine->I]     = machine->V[X] / 100;
                     machine->memory[machine->I + 1] = (machine->V[X] / 10) % 10;
                     machine->memory[machine->I + 2] = (machine->V[X] % 100) % 10;

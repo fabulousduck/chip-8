@@ -100,7 +100,6 @@ void load_game(Machine * machine, char * file_path) {
     unsigned int bufferSize = get_file_length(fp);
     int bytes_read_error = fread((machine->memory + PROGRAM_MEM_SPACE_START) , bufferSize, 1, fp); // Read in the entire file into memory
     (void)bytes_read_error; //this is done so we dont get an unused variable warn with -Wall
-    dumpMem(machine);
     start_machine(machine);
 }
 

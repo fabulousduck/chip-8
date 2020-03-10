@@ -19,8 +19,6 @@ void prepare_emulator(Emulator * emulator, Machine * machine) {
 }
 
 void start_emulator(Emulator * emulator) {
-    printf("fuck");
-
     Machine * machine = emulator->machine;
     Timespec * timer = (Timespec*)malloc(sizeof(Timespec));
     Timespec * timer2 = (Timespec*)malloc(sizeof(Timespec));
