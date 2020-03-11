@@ -11,6 +11,8 @@ Welcome to chip-8's documentation!
    :caption: Contents:
 
    pages/the-interpreter.md
+   pages/the-machine.md
+   pages/the-debugger.md
 
 
 Indices and tables

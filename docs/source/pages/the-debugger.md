@@ -1,0 +1,2 @@
+# The debugger
+The debugger is a small visualisation tool that can be activated by running the emulator with the `-d` flag. It displays a small chunk of the current programs ROM. It is primarily aimed at people making their own chip-8 games and wanting to make sure that their programs get loaded in correctly. It is currently on the roadmap of adding more indepth debugging capabilities such as register logging and stepping through opcodes back and forth.
